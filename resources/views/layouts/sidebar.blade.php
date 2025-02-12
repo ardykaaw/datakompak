@@ -2,7 +2,7 @@
     <div class="flex flex-col w-64">
         <div class="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto bg-white border-r">
             <div class="flex items-center justify-center flex-shrink-0 px-4 -mt-2">
-                <img src="/images/logo-pln.png" alt="PLN Logo" class="h-24 w-auto">
+                <img src="{{ asset('images/logo-pln.png') }}" alt="PLN Logo" class="h-24 w-auto">
             </div>
             <div class="flex flex-col items-center -mt-2">
                 <h2 class="text-lg font-semibold text-gray-900">PLN Nusantara Power</h2>
