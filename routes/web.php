@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataController;
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\SettingsController;
 
 // Redirect root to login
 Route::redirect('/', '/login');
@@ -18,8 +21,21 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/data', [DataController::class, 'store'])->name('data.store');
+    
+    // Ikhtisar Harian
+    Route::get('/ikhtisar-harian', [DataController::class, 'index'])->name('ikhtisar-harian');
+    Route::post('/ikhtisar-harian', [DataController::class, 'store'])->name('ikhtisar-harian.store');
+    
+    // Analytics
+    Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+    
+    // Reports
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
+    
+    // Settings
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
 });
 
 // Super Admin Routes

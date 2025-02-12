@@ -4,157 +4,231 @@
 
 @section('content')
 <div class="flex h-screen bg-gray-100">
-    <!-- Sidebar -->
     @include('layouts.sidebar')
 
-    <!-- Main content -->
     <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Top header -->
         <header class="bg-white shadow-sm">
             <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
                 <h1 class="text-xl font-semibold text-gray-900">Dashboard</h1>
-                <button type="button" class="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-500">Last Updated: {{ now()->format('d M Y H:i') }}</span>
+                    <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        <i class="fas fa-sync-alt mr-2"></i>
+                        Refresh Data
+                    </button>
+                </div>
             </div>
         </header>
 
-        <!-- Main content area -->
         <main class="flex-1 overflow-y-auto">
             <div class="py-6">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                        <!-- Total Units Card -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <!-- Main Stats -->
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-6">
+                        <!-- From Ikhtisar Harian -->
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 overflow-hidden shadow rounded-lg text-white">
                             <div class="p-5">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-industry text-2xl text-blue-500"></i>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium opacity-75">Total Produksi Hari Ini</div>
+                                        <div class="text-2xl font-bold mt-2">2,400 MW</div>
+                                        <div class="text-sm mt-2">
+                                            <span class="bg-blue-400 bg-opacity-50 px-2 py-1 rounded-full">
+                                                3 Unit Aktif
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt class="text-sm font-medium text-gray-500 truncate">Total Units</dt>
-                                            <dd class="text-3xl font-semibold text-gray-900">4</dd>
-                                        </dl>
+                                    <div class="text-3xl opacity-75">
+                                        <i class="fas fa-bolt"></i>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="bg-blue-600 px-5 py-3">
+                                <a href="{{ route('ikhtisar-harian') }}" class="flex items-center justify-between text-sm">
+                                    <span>Lihat Detail Ikhtisar</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- From Analytics -->
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 overflow-hidden shadow rounded-lg text-white">
+                            <div class="p-5">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium opacity-75">Efisiensi Rata-rata</div>
+                                        <div class="text-2xl font-bold mt-2">92.8%</div>
+                                        <div class="text-sm mt-2">
+                                            <span class="bg-green-400 bg-opacity-50 px-2 py-1 rounded-full">
+                                                +2.3% dari bulan lalu
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="text-3xl opacity-75">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-green-600 px-5 py-3">
+                                <a href="{{ route('analytics') }}" class="flex items-center justify-between text-sm">
+                                    <span>Lihat Analytics</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- From Reports -->
+                        <div class="bg-gradient-to-br from-purple-500 to-purple-600 overflow-hidden shadow rounded-lg text-white">
+                            <div class="p-5">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="text-sm font-medium opacity-75">Laporan Bulan Ini</div>
+                                        <div class="text-2xl font-bold mt-2">28 Laporan</div>
+                                        <div class="text-sm mt-2">
+                                            <span class="bg-purple-400 bg-opacity-50 px-2 py-1 rounded-full">
+                                                5 Perlu Review
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="text-3xl opacity-75">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-purple-600 px-5 py-3">
+                                <a href="{{ route('reports') }}" class="flex items-center justify-between text-sm">
+                                    <span>Lihat Semua Laporan</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Access & Recent Activities -->
+                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                        <!-- Quick Access -->
+                        <div class="bg-white shadow rounded-lg">
+                            <div class="p-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Akses Cepat</h3>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <a href="{{ route('ikhtisar-harian') }}" class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                        <i class="fas fa-clipboard-list text-2xl text-blue-500 mr-4"></i>
+                                        <div>
+                                            <div class="font-medium">Ikhtisar Harian</div>
+                                            <div class="text-sm text-gray-500">Input data hari ini</div>
+                                        </div>
+                                    </a>
+                                    <a href="{{ route('analytics') }}" class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                        <i class="fas fa-chart-bar text-2xl text-green-500 mr-4"></i>
+                                        <div>
+                                            <div class="font-medium">Analytics</div>
+                                            <div class="text-sm text-gray-500">Lihat performa</div>
+                                        </div>
+                                    </a>
+                                    <a href="{{ route('reports') }}" class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                        <i class="fas fa-file-alt text-2xl text-purple-500 mr-4"></i>
+                                        <div>
+                                            <div class="font-medium">Reports</div>
+                                            <div class="text-sm text-gray-500">Generate laporan</div>
+                                        </div>
+                                    </a>
+                                    <a href="{{ route('settings') }}" class="flex items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                        <i class="fas fa-cog text-2xl text-gray-500 mr-4"></i>
+                                        <div>
+                                            <div class="font-medium">Settings</div>
+                                            <div class="text-sm text-gray-500">Konfigurasi sistem</div>
+                                        </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Active Units Card -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
-                            <div class="p-5">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-power-off text-2xl text-green-500"></i>
+                        <!-- Recent Activities -->
+                        <div class="bg-white shadow rounded-lg">
+                            <div class="p-6">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4">Aktivitas Terkini</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <span class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                <i class="fas fa-clipboard-check text-blue-500"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900">
+                                                Ikhtisar Harian Diperbarui
+                                            </p>
+                                            <p class="text-sm text-gray-500">
+                                                Unit 1: 600 MW, Efisiensi 98%
+                                            </p>
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            5 menit yang lalu
+                                        </div>
                                     </div>
-                                    <div class="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt class="text-sm font-medium text-gray-500 truncate">Active Units</dt>
-                                            <dd class="text-3xl font-semibold text-gray-900">3</dd>
-                                        </dl>
+
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <span class="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                                                <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900">
+                                                Maintenance Alert
+                                            </p>
+                                            <p class="text-sm text-gray-500">
+                                                Unit 2 dijadwalkan untuk maintenance
+                                            </p>
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            1 jam yang lalu
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <span class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                <i class="fas fa-chart-line text-green-500"></i>
+                                            </span>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900">
+                                                Laporan Analytics
+                                            </p>
+                                            <p class="text-sm text-gray-500">
+                                                Efisiensi meningkat 2.3%
+                                            </p>
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            3 jam yang lalu
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Output Card -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
-                            <div class="p-5">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-bolt text-2xl text-yellow-500"></i>
-                                    </div>
-                                    <div class="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt class="text-sm font-medium text-gray-500 truncate">Total Output</dt>
-                                            <dd class="text-3xl font-semibold text-gray-900">2.4 GW</dd>
-                                        </dl>
-                                    </div>
+                                <div class="mt-4">
+                                    <button class="text-sm text-blue-600 hover:text-blue-800">
+                                        Lihat semua aktivitas
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Data Input and Recent Data -->
-                    <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                        <!-- Data Input Card -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
-                            <div class="px-4 py-5 sm:p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">
-                                    <i class="fas fa-edit mr-2 text-blue-500"></i>
-                                    Input Data
-                                </h3>
-                                <form action="{{ route('data.store') }}" method="POST" class="space-y-4">
-                                    @csrf
-                                    <div>
-                                        <label for="unit" class="block text-sm font-medium text-gray-700">Unit</label>
-                                        <select id="unit" name="unit" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                            <option value="Unit 1">Unit 1</option>
-                                            <option value="Unit 2">Unit 2</option>
-                                            <option value="Unit 3">Unit 3</option>
-                                            <option value="Unit 4">Unit 4</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="value" class="block text-sm font-medium text-gray-700">Value (MW)</label>
-                                        <div class="mt-1 relative rounded-md shadow-sm">
-                                            <input type="number" name="value" id="value" step="0.01"
-                                                class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-3 pr-12 sm:text-sm border-gray-300 rounded-md"
-                                                placeholder="0.00">
-                                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                                <span class="text-gray-500 sm:text-sm">MW</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        <i class="fas fa-save mr-2"></i>
-                                        Save Data
-                                    </button>
-                                </form>
+                    <!-- Performance Overview -->
+                    <div class="mt-6 bg-white shadow rounded-lg">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-medium text-gray-900">Overview Performa Unit</h3>
+                                <select class="text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                    <option>7 Hari Terakhir</option>
+                                    <option>30 Hari Terakhir</option>
+                                    <option>3 Bulan Terakhir</option>
+                                </select>
                             </div>
-                        </div>
-
-                        <!-- Recent Data Card -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
-                            <div class="px-4 py-5 sm:p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">
-                                    <i class="fas fa-history mr-2 text-blue-500"></i>
-                                    Recent Data
-                                </h3>
-                                <div class="flow-root">
-                                    <ul class="-my-5 divide-y divide-gray-200">
-                                        @forelse($recentData ?? [] as $data)
-                                        <li class="py-4">
-                                            <div class="flex items-center space-x-4">
-                                                <div class="flex-shrink-0">
-                                                    <i class="fas fa-chart-bar text-blue-400"></i>
-                                                </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <p class="text-sm font-medium text-gray-900 truncate">
-                                                        {{ $data->unit }}
-                                                    </p>
-                                                    <p class="text-sm text-gray-500">
-                                                        {{ number_format($data->value, 2) }} MW
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    <span class="text-sm text-gray-500">
-                                                        {{ $data->created_at->diffForHumans() }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        @empty
-                                        <li class="py-4">
-                                            <div class="flex justify-center text-gray-500">
-                                                <i class="fas fa-info-circle mr-2"></i>
-                                                No data available
-                                            </div>
-                                        </li>
-                                        @endforelse
-                                    </ul>
+                            <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                                <div class="text-center text-gray-500">
+                                    <i class="fas fa-chart-area text-4xl mb-2"></i>
+                                    <p>Grafik performa akan ditampilkan di sini</p>
                                 </div>
                             </div>
                         </div>
@@ -164,4 +238,4 @@
         </main>
     </div>
 </div>
-@endsection 
+@endsection
