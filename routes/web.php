@@ -22,10 +22,14 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
     
     // Ikhtisar Harian
-    Route::get('/ikhtisar-harian', [DataController::class, 'index'])->name('ikhtisar-harian');
+    Route::get('/ikhtisar-harian', function () {
+        return view('ikhtisar-harian');
+    })->name('ikhtisar-harian');
     Route::post('/ikhtisar-harian', [DataController::class, 'store'])->name('ikhtisar-harian.store');
     
     // Analytics
