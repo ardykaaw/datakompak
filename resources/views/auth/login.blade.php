@@ -10,7 +10,7 @@
             <div class="flex justify-center -mt-4 mb-2">
                 <img src="{{ asset('images/logo-pln.png') }}" alt="PLN Logo" class="h-40 w-auto">
             </div>
-            <h2 class="mt-2 text-center text-3xl font-extrabold text-gray-900">
+            <h2 class="mt-1 text-center text-3xl font-extrabold text-gray-900">
                 PLN Nusantara Power
             </h2>
             <p class="mt-1 text-center text-sm text-gray-600">
