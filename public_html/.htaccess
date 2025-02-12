@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    
+    # Jika file/folder ada, gunakan itu
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    
+    # Jika request ke /public, lewati
+    RewriteCond %{REQUEST_URI} !^/public/
+    
+    # Redirect semua request ke /public
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule> 

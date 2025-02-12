@@ -3,12 +3,12 @@
 @section('title', 'Login')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('/images/background-login.jpg');">
+<div class="min-h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('{{ url('images/background-login.jpg') }}');">
     <div class="absolute inset-0 bg-black opacity-50"></div>
     <div class="max-w-md w-full space-y-6 bg-white/90 backdrop-blur-sm p-10 rounded-xl shadow-2xl relative">
         <div>
             <div class="flex justify-center -mt-4 mb-2">
-                <img src="{{ Vite::asset('resources/images/pln-logo.png') }}" alt="PLN Logo" class="h-32 w-auto">
+                <img src="{{ url('images/pln-logo.png') }}" alt="PLN Logo" class="h-32 w-auto">
             </div>
             <h2 class="mt-2 text-center text-3xl font-extrabold text-gray-900">
                 PLN Nusantara Power
