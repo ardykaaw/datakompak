@@ -19,22 +19,22 @@
         </div>
         <form class="mt-6 space-y-4" action="{{ route('login') }}" method="POST">
             @csrf
-            <div class="rounded-md shadow-sm -space-y-px">
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-envelope text-gray-400"></i>
+            <div class="space-y-4">
+                <div class="flex items-center bg-gray-50 rounded-lg border border-gray-300 hover:border-blue-500 transition-colors">
+                    <div class="p-2 bg-gray-50 rounded-l-lg border-r border-gray-300">
+                        <i class="fas fa-user text-xl text-gray-400"></i>
                     </div>
                     <input id="email" name="email" type="email" required 
-                        class="appearance-none rounded-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                        placeholder="Email address">
+                        class="block w-full px-4 py-3 bg-gray-50 border-0 focus:ring-0 focus:outline-none rounded-r-lg text-gray-900 placeholder-gray-500 sm:text-sm" 
+                        placeholder="Enter Username">
                 </div>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-lock text-gray-400"></i>
+                <div class="flex items-center bg-gray-50 rounded-lg border border-gray-300 hover:border-blue-500 transition-colors">
+                    <div class="p-2 bg-gray-50 rounded-l-lg border-r border-gray-300">
+                        <i class="fas fa-lock text-xl text-gray-400"></i>
                     </div>
                     <input id="password" name="password" type="password" required 
-                        class="appearance-none rounded-none relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
-                        placeholder="Password">
+                        class="block w-full px-4 py-3 bg-gray-50 border-0 focus:ring-0 focus:outline-none rounded-r-lg text-gray-900 placeholder-gray-500 sm:text-sm" 
+                        placeholder="Enter Password">
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
             @endif
 
             <div>
-                <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button type="submit" class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                     <span class="absolute left-0 inset-y-0 flex items-center pl-3">
                         <i class="fas fa-sign-in-alt text-blue-500 group-hover:text-blue-400"></i>
                     </span>
