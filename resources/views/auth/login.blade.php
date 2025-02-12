@@ -5,12 +5,12 @@
 @section('content')
 <div class="min-h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('{{ url('images/background-login.jpg') }}');">
     <div class="absolute inset-0 bg-black opacity-50"></div>
-    <div class="max-w-lg w-full space-y-4 bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-2xl relative">
+    <div class="max-w-md w-full space-y-4 bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-2xl relative">
         <div class="space-y-1">
             <div class="flex justify-center -mt-4">
-                <img src="{{ url('images/logo-pln.png') }}" alt="PLN Logo" class="h-52 w-auto -mb-4">
+                <img src="{{ url('images/logo-pln.png') }}" alt="PLN Logo" class="h-32 w-auto -mb-2">
             </div>
-            <h2 class="text-center text-3xl font-extrabold text-gray-900">
+            <h2 class="text-center text-2xl font-bold text-gray-900">
                 PLN Nusantara Power
             </h2>
             <p class="text-center text-sm text-gray-600">
