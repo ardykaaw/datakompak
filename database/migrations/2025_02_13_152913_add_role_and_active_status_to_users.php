@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('user'); // Possible values: user, admin, super_admin
+            $table->string('role')->default('user');
             $table->boolean('is_active')->default(true);
         });
     }
@@ -23,8 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-            $table->dropColumn('is_active');
+            $table->dropColumn(['role', 'is_active']);
         });
     }
 };

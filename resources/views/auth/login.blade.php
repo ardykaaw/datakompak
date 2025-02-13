@@ -3,23 +3,23 @@
 @section('title', 'Login')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('{{ asset('images/background-login.jpg') }}');">
+<div class="min-h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('{{ url('images/background-login.jpg') }}');">
     <div class="absolute inset-0 bg-black opacity-50"></div>
-    <div class="max-w-md w-full space-y-6 bg-white/90 backdrop-blur-sm p-10 rounded-xl shadow-2xl relative">
-        <div>
-            <div class="flex justify-center -mt-4 mb-2">
-                <img src="{{ asset('images/logo-pln.png') }}" alt="PLN Logo" class="h-40 w-auto">
+    <div class="max-w-lg w-full space-y-4 bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-2xl relative">
+        <div class="space-y-1">
+            <div class="flex justify-center -mt-4">
+                <img src="{{ url('images/logo-pln.png') }}" alt="PLN Logo" class="h-52 w-auto -mb-4">
             </div>
-            <h2 class="mt-1 text-center text-3xl font-extrabold text-gray-900">
+            <h2 class="text-center text-3xl font-extrabold text-gray-900">
                 PLN Nusantara Power
             </h2>
-            <p class="mt-1 text-center text-sm text-gray-600">
+            <p class="text-center text-sm text-gray-600">
                 Operations Management System
-            </p>
+            </p
         </div>
-        <form class="mt-6 space-y-4" action="{{ route('login') }}" method="POST">
+        <form class="mt-4 space-y-3" action="{{ route('login') }}" method="POST">
             @csrf
-            <div class="space-y-4">
+            <div class="space-y-3">
                 <div class="flex items-center bg-gray-50 rounded-lg border border-gray-300 hover:border-blue-500 transition-colors">
                     <div class="p-2 bg-gray-50 rounded-l-lg border-r border-gray-300">
                         <i class="fas fa-user text-xl text-gray-400"></i>
@@ -39,7 +39,7 @@
             </div>
 
             @if ($errors->any())
-            <div class="rounded-md bg-red-50 p-4">
+            <div class="rounded-md bg-red-50 p-3">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         <i class="fas fa-exclamation-circle text-red-400"></i>
@@ -48,7 +48,7 @@
                         <h3 class="text-sm font-medium text-red-800">
                             There were errors with your submission
                         </h3>
-                        <div class="mt-2 text-sm text-red-700">
+                        <div class="mt-1 text-sm text-red-700">
                             @foreach ($errors->all() as $error)
                                 <p>{{ $error }}</p>
                             @endforeach
