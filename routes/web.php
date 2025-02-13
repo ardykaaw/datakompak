@@ -9,6 +9,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\DailyUnitRecordController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\UnitMachineController;
 
 // Redirect root to login
 Route::redirect('/', '/login');
@@ -52,4 +53,8 @@ Route::middleware(['auth'])->group(function () {
         Route::put('user-management/{user}', [UserManagementController::class, 'update'])->name('user-management.update');
         Route::delete('user-management/{user}', [UserManagementController::class, 'destroy'])->name('user-management.destroy');
     });
+
+    // Unit dan Mesin
+    Route::resource('unit-mesin', UnitMachineController::class);
+    Route::post('unit-mesin/{unit}/machines', [UnitMachineController::class, 'storeMachine'])->name('unit-mesin.machines.store');
 });

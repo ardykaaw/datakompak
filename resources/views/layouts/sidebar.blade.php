@@ -86,6 +86,16 @@
                   x-transition:enter-end="opacity-100">Settings</span>
         </a>
 
+        <a href="{{ route('unit-mesin.index') }}" 
+           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('unit-mesin.*') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
+           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
+            <i class="fas fa-industry text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
+            <span x-show="isSidebarOpen"
+                  x-transition:enter="transition-opacity ease-out duration-300"
+                  x-transition:enter-start="opacity-0"
+                  x-transition:enter-end="opacity-100">Unit dan Mesin</span>
+        </a>
+
         @if(auth()->user()->isSuperAdmin())
         <a href="{{ route('user-management.index') }}" 
            class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('user-management.*') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
