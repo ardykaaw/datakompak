@@ -10,6 +10,8 @@
         activeTab: 'input',
         showAlert: false,
         selectedUnit: null,
+        selectedMachine: null,
+        machines: [],
         init() {
             this.$watch('isSidebarOpen', value => localStorage.setItem('sidebarOpen', value))
             this.$watch('isDarkMode', value => {
@@ -20,6 +22,16 @@
             // Show alert if success message exists
             if (@json(session()->has('success'))) {
                 this.showAlert = true;
+            }
+        },
+        async loadMachines() {
+            if (this.selectedUnit) {
+                const response = await fetch(`/api/units/${this.selectedUnit}/machines`);
+                this.machines = await response.json();
+                this.selectedMachine = null;
+            } else {
+                this.machines = [];
+                this.selectedMachine = null;
             }
         }
      }">
@@ -237,82 +249,123 @@
                     </div>
                 </div>
 
-                <!-- Input Form -->
-                <div x-show="activeTab === 'input'" class="bg-white shadow rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Input Data Unit</h3>
-                        <form action="{{ route('ikhtisar-harian.store') }}" method="POST" class="space-y-6">
-                            @csrf
-                            
-                            <!-- Unit Selection -->
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <label for="unit_name" class="block text-sm font-medium text-blue-700">Pilih Mesin</label>
-                                <select id="unit_name" 
-                                        name="unit_name" 
-                                        x-model="selectedUnit"
-                                        @change="
-                                            const unit = $event.target.selectedOptions[0].dataset;
-                                            if (unit.power) {
-                                                $refs.installedPower.value = unit.power;
-                                                $refs.silmPower.value = Math.round(unit.power * 0.9);
-                                                $refs.supplyPower.value = Math.round(unit.power * 0.85);
-                                            }
-                                        "
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option value="">Pilih Mesin</option>
-                                    @foreach($powerUnits as $unit)
-                                        <option value="{{ $unit['name'] }}" 
-                                                data-power="{{ $unit['power'] }}">
-                                            {{ $unit['name'] }} ({{ number_format($unit['power']) }} kW)
-                                        </option>
-                                    @endforeach
-                                </select>
+                <!-- Form Input Section -->
+                <div class="bg-white shadow rounded-lg p-6">
+                    <form method="POST" action="{{ route('ikhtisar-harian.store') }}"
+                          x-data="{
+                              selectedUnit: null,
+                              selectedMachine: null,
+                              machines: [],
+                              showForm: false,
+                              async loadMachines() {
+                                  if (this.selectedUnit) {
+                                      const response = await fetch(`/api/units/${this.selectedUnit}/machines`);
+                                      this.machines = await response.json();
+                                      this.selectedMachine = null;
+                                      this.showForm = false;
+                                  } else {
+                                      this.machines = [];
+                                      this.selectedMachine = null;
+                                      this.showForm = false;
+                                  }
+                              },
+                              watchMachine() {
+                                  this.showForm = this.selectedUnit && this.selectedMachine ? true : false;
+                              }
+                          }"
+                          @change="watchMachine()">
+                        @csrf
+                        
+                        <!-- Unit & Machine Selection -->
+                        <div class="space-y-6 mb-8">
+                            <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <!-- Unit Selection -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Pilih Unit
+                                        </label>
+                                        <select name="unit_id" 
+                                                x-model="selectedUnit"
+                                                @change="loadMachines()"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="">Pilih Unit</option>
+                                            @foreach($units as $unit)
+                                                <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Machine Selection -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Pilih Mesin
+                                        </label>
+                                        <select name="machine_id" 
+                                                x-model="selectedMachine"
+                                                :disabled="!selectedUnit"
+                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <option value="">Pilih Mesin</option>
+                                            <template x-for="machine in machines" :key="machine.id">
+                                                <option :value="machine.id" x-text="machine.name"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Data Input Grid -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Form Input Fields - Only shown when unit and machine are selected -->
+                            <div x-show="showForm" 
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                                 class="space-y-6">
+                                
                                 <!-- Daya Section -->
                                 <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Daya (kW)</h4>
-                                    <div class="space-y-3">
+                                    <h4 class="font-medium text-gray-900 mb-4">Daya (MW)</h4>
+                                    <div class="grid grid-cols-3 gap-4">
                                         <div>
                                             <label class="block text-sm text-gray-700">Terpasang</label>
                                             <input type="number" 
                                                    step="0.001" 
                                                    name="installed_power" 
-                                                   x-ref="installedPower"
                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                         <div>
-                                            <label class="block text-sm text-gray-700">SILM</label>
+                                            <label class="block text-sm text-gray-700">DMN</label>
                                             <input type="number" 
                                                    step="0.001" 
-                                                   name="silm_power"
-                                                   x-ref="silmPower"
+                                                   name="dmn_power" 
                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                         <div>
-                                            <label class="block text-sm text-gray-700">Pasok</label>
+                                            <label class="block text-sm text-gray-700">Mampu</label>
                                             <input type="number" 
                                                    step="0.001" 
-                                                   name="supply_power"
-                                                   x-ref="supplyPower"
+                                                   name="capable_power" 
                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Beban Puncak Section -->
+                                <!-- Beban Section -->
                                 <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Beban Puncak (kW)</h4>
-                                    <div class="space-y-3">
+                                    <h4 class="font-medium text-gray-900 mb-4">Beban (MW)</h4>
+                                    <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm text-gray-700">Siang</label>
-                                            <input type="number" step="0.001" name="peak_load_day" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <label class="block text-sm text-gray-700">WBP</label>
+                                            <input type="number" 
+                                                   step="0.001" 
+                                                   name="peak_load" 
+                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                         <div>
-                                            <label class="block text-sm text-gray-700">Malam</label>
-                                            <input type="number" step="0.001" name="peak_load_night" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <label class="block text-sm text-gray-700">LWBP</label>
+                                            <input type="number" 
+                                                   step="0.001" 
+                                                   name="off_peak_load" 
+                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                     </div>
                                 </div>
@@ -320,85 +373,70 @@
                                 <!-- Produksi Section -->
                                 <div class="bg-gray-50 p-4 rounded-lg">
                                     <h4 class="font-medium text-gray-900 mb-4">Produksi (kWh)</h4>
-                                    <div class="space-y-3">
+                                    <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm text-gray-700">Bruto</label>
-                                            <input type="number" step="0.001" name="gross_production" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <input type="number" 
+                                                   step="0.001" 
+                                                   name="gross_production" 
+                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                         <div>
                                             <label class="block text-sm text-gray-700">Netto</label>
-                                            <input type="number" step="0.001" name="net_production" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <input type="number" 
+                                                   step="0.001" 
+                                                   name="net_production" 
+                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Pemakaian Sendiri Section -->
+                                <!-- Jam Operasi Section -->
                                 <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Pemakaian Sendiri</h4>
-                                    <div class="space-y-3">
+                                    <h4 class="font-medium text-gray-900 mb-4">Jam Operasi</h4>
+                                    <div class="grid grid-cols-4 gap-4">
                                         <div>
-                                            <label class="block text-sm text-gray-700">Aux (kWh)</label>
-                                            <input type="number" step="0.001" name="aux_power" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <label class="block text-sm text-gray-700">OPR</label>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   name="operating_hours" 
+                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                         <div>
-                                            <label class="block text-sm text-gray-700">Susut Trafo (kWh)</label>
-                                            <input type="number" step="0.001" name="transformer_losses" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            <label class="block text-sm text-gray-700">PO</label>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   name="planned_outage" 
+                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-gray-700">MO</label>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   name="maintenance_outage" 
+                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm text-gray-700">FO</label>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   name="forced_outage" 
+                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Jam Indikator Section -->
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Jam Indikator</h4>
-                                    <div class="space-y-3">
-                                        <div class="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <label class="block text-sm text-gray-700">OPR</label>
-                                                <input type="number" step="0.01" name="operating_hours" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                        </div>
-                                        <div class="grid grid-cols-3 gap-3">
-                                            <div>
-                                                <label class="block text-sm text-gray-700">PO</label>
-                                                <input type="number" step="0.01" name="planned_maintenance" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm text-gray-700">MO</label>
-                                                <input type="number" step="0.01" name="maintenance_outage" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                            <div>
-                                                <label class="block text-sm text-gray-700">FO</label>
-                                                <input type="number" step="0.01" name="forced_outage" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Trip Section -->
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Trip Non OMC</h4>
-                                    <div class="space-y-3">
-                                        <div>
-                                            <label class="block text-sm text-gray-700">Mesin (Kali)</label>
-                                            <input type="number" name="machine_trips" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-gray-700">Listrik (Kali)</label>
-                                            <input type="number" name="electrical_trips" value="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                    </div>
+                                <!-- Submit Button -->
+                                <div class="flex justify-end">
+                                    <button type="submit" 
+                                            class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        <i class="fas fa-save mr-2"></i>
+                                        Simpan Data
+                                    </button>
                                 </div>
                             </div>
-
-                            <!-- Submit Button -->
-                            <div class="flex justify-end">
-                                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                    <i class="fas fa-save mr-2"></i>
-                                    Simpan Data
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- View Data -->
@@ -426,26 +464,20 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">{{ number_format($data->installed_power, 0) }}</div>
-                                            <div class="text-xs text-gray-500">SILM: {{ number_format($data->silm_power, 0) }}</div>
-                                            <div class="text-xs text-gray-500">Pasok: {{ number_format($data->supply_power, 0) }}</div>
+                                            <div class="text-xs text-gray-500">DMN: {{ number_format($data->dmn_power, 0) }}</div>
+                                            <div class="text-xs text-gray-500">Mampu: {{ number_format($data->capable_power, 0) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">S: {{ number_format($data->peak_load_day, 0) }}</div>
-                                            <div class="text-xs text-gray-500">M: {{ number_format($data->peak_load_night, 0) }}</div>
-                                            <div class="text-xs text-gray-500">Ratio: {{ number_format($data->power_ratio, 1) }}%</div>
+                                            <div class="text-sm text-gray-900">WBP: {{ number_format($data->peak_load, 0) }}</div>
+                                            <div class="text-xs text-gray-500">LWBP: {{ number_format($data->off_peak_load, 0) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">Bruto: {{ number_format($data->gross_production, 0) }}</div>
                                             <div class="text-xs text-gray-500">Netto: {{ number_format($data->net_production, 0) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">Aux: {{ number_format($data->aux_power, 0) }}</div>
-                                            <div class="text-xs text-gray-500">Trafo: {{ number_format($data->transformer_losses, 0) }}</div>
-                                            <div class="text-xs text-gray-500">{{ number_format($data->usage_percentage, 1) }}%</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm text-gray-900">OPR: {{ number_format($data->operating_hours, 1) }}</div>
-                                            <div class="text-xs text-gray-500">PO: {{ number_format($data->planned_maintenance, 1) }}</div>
+                                            <div class="text-xs text-gray-500">PO: {{ number_format($data->planned_outage, 1) }}</div>
                                             <div class="text-xs text-gray-500">MO: {{ number_format($data->maintenance_outage, 1) }}</div>
                                             <div class="text-xs text-gray-500">FO: {{ number_format($data->forced_outage, 1) }}</div>
                                         </td>
