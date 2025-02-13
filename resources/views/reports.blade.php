@@ -3,13 +3,37 @@
 @section('title', 'Reports')
 
 @section('content')
-<div class="flex h-screen bg-gray-100">
+<div class="min-h-screen bg-gray-100"
+     x-data="{ 
+        isSidebarOpen: localStorage.getItem('sidebarOpen') !== 'false',
+        isDarkMode: localStorage.getItem('darkMode') === 'true',
+        init() {
+            this.$watch('isSidebarOpen', value => localStorage.setItem('sidebarOpen', value))
+            this.$watch('isDarkMode', value => {
+                localStorage.setItem('darkMode', value)
+                document.documentElement.classList.toggle('dark', value)
+            })
+        }
+     }">
+    
     @include('layouts.sidebar')
 
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <header class="bg-white shadow-sm">
+    <!-- Main Content -->
+    <div class="transition-all duration-300 ease-in-out"
+         :class="{
+             'lg:pl-64': isSidebarOpen,
+             'lg:pl-20': !isSidebarOpen
+         }">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-10">
             <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-                <h1 class="text-xl font-semibold text-gray-900">Reports</h1>
+                <div class="flex items-center">
+                    <button @click="isSidebarOpen = !isSidebarOpen" 
+                            class="text-gray-500 hover:text-gray-600 focus:outline-none mr-4">
+                        <i class="fas fa-grip-lines text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-semibold text-gray-900">Reports</h1>
+                </div>
                 <div class="flex items-center space-x-4">
                     <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
                         <i class="fas fa-file-export mr-2"></i>

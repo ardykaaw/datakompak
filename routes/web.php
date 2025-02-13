@@ -7,7 +7,7 @@ use App\Http\Controllers\DataController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\IkhtisarHarianController;
+use App\Http\Controllers\DailyUnitRecordController;
 
 // Redirect root to login
 Route::redirect('/', '/login');
@@ -28,8 +28,8 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
     
     // Ikhtisar Harian
-    Route::get('/ikhtisar-harian', [IkhtisarHarianController::class, 'index'])->name('ikhtisar-harian');
-    Route::post('/ikhtisar-harian', [DataController::class, 'store'])->name('ikhtisar-harian.store');
+    Route::get('/ikhtisar-harian', [DailyUnitRecordController::class, 'index'])->name('ikhtisar-harian');
+    Route::post('/ikhtisar-harian', [DailyUnitRecordController::class, 'store'])->name('ikhtisar-harian.store');
     
     // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
