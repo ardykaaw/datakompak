@@ -59,7 +59,6 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::ATTR_EMULATE_PREPARES => true,
-                PDO::MYSQL_ATTR_MAX_PREPARED_STMT_COUNT => env('MYSQL_ATTR_MAX_PREPARED_STMT_COUNT', 16384),
             ]) : [],
         ],
 
