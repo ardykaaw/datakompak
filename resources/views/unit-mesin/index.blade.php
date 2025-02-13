@@ -8,6 +8,10 @@
         isSidebarOpen: localStorage.getItem('sidebarOpen') !== 'false',
         isDarkMode: localStorage.getItem('darkMode') === 'true',
         init() {
+            // Apply dark mode immediately on component initialization
+            document.documentElement.classList.toggle('dark', this.isDarkMode)
+            
+            // Watch for changes
             this.$watch('isSidebarOpen', value => localStorage.setItem('sidebarOpen', value))
             this.$watch('isDarkMode', value => {
                 localStorage.setItem('darkMode', value)
