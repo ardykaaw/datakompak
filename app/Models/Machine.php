@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Machine extends Model
 {
-    protected $fillable = ['unit_id', 'name', 'code', 'specifications'];
+    use HasFactory;
+
+    protected $fillable = ['name', 'code', 'specifications', 'unit_id'];
 
     public function unit()
     {

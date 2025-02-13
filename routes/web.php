@@ -24,7 +24,11 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Protected Routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_middleware', 'auth'),
+    'verified'
+])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -58,4 +62,5 @@ Route::middleware(['auth'])->group(function () {
     // Unit dan Mesin
     Route::resource('unit-mesin', UnitMachineController::class);
     Route::post('unit-mesin/{unit}/machines', [UnitMachineController::class, 'storeMachine'])->name('unit-mesin.machines.store');
+    Route::delete('unit-mesin/{unit}/machines/{machine}', [UnitMachineController::class, 'destroyMachine'])->name('unit-mesin.machines.destroy');
 });
