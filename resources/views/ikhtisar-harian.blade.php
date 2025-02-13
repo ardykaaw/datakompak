@@ -229,7 +229,7 @@
                     </div>
                 </div>
 
-                <!-- Tabs -->
+                <!-- Tabs Navigation -->
                 <div class="mb-6">
                     <div class="border-b border-gray-200">
                         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
@@ -249,259 +249,269 @@
                     </div>
                 </div>
 
-                <!-- Form Input Section -->
-                <div class="bg-white shadow rounded-lg p-6">
-                    <form method="POST" action="{{ route('ikhtisar-harian.store') }}"
-                          x-data="{
-                              selectedUnit: null,
-                              selectedMachine: null,
-                              machines: [],
-                              showForm: false,
-                              async loadMachines() {
-                                  if (this.selectedUnit) {
-                                      const response = await fetch(`/api/units/${this.selectedUnit}/machines`);
-                                      this.machines = await response.json();
-                                      this.selectedMachine = null;
-                                      this.showForm = false;
-                                  } else {
-                                      this.machines = [];
-                                      this.selectedMachine = null;
-                                      this.showForm = false;
+                <!-- Input Data Tab -->
+                <div x-show="activeTab === 'input'" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <!-- Form Input Section -->
+                        <form method="POST" 
+                              action="{{ route('ikhtisar-harian.store') }}"
+                              x-data="{
+                                  selectedUnit: null,
+                                  selectedMachine: null,
+                                  machines: [],
+                                  showForm: false,
+                                  async loadMachines() {
+                                      if (this.selectedUnit) {
+                                          const response = await fetch(`/api/units/${this.selectedUnit}/machines`);
+                                          this.machines = await response.json();
+                                          this.selectedMachine = null;
+                                          this.showForm = false;
+                                      } else {
+                                          this.machines = [];
+                                          this.selectedMachine = null;
+                                          this.showForm = false;
+                                      }
+                                  },
+                                  watchMachine() {
+                                      this.showForm = this.selectedUnit && this.selectedMachine ? true : false;
                                   }
-                              },
-                              watchMachine() {
-                                  this.showForm = this.selectedUnit && this.selectedMachine ? true : false;
-                              }
-                          }"
-                          @change="watchMachine()">
-                        @csrf
-                        
-                        <!-- Unit & Machine Selection -->
-                        <div class="space-y-6 mb-8">
-                            <div class="bg-white p-4 rounded-lg border border-gray-200">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <!-- Unit Selection -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Pilih Unit
-                                        </label>
-                                        <select name="unit_id" 
-                                                x-model="selectedUnit"
-                                                @change="loadMachines()"
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                            <option value="">Pilih Unit</option>
-                                            @foreach($units as $unit)
-                                                <option value="{{ $unit->id }}">{{ $unit->name }}</option>
-                                            @endforeach
-                                        </select>
+                              }"
+                              @change="watchMachine()">
+                            @csrf
+                            
+                            <!-- Unit & Machine Selection -->
+                            <div class="space-y-6 mb-8">
+                                <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <!-- Unit Selection -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Pilih Unit
+                                            </label>
+                                            <select name="unit_id" 
+                                                    x-model="selectedUnit"
+                                                    @change="loadMachines()"
+                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                                <option value="">Pilih Unit</option>
+                                                @foreach($units as $unit)
+                                                    <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <!-- Machine Selection -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Pilih Mesin
+                                            </label>
+                                            <select name="machine_id" 
+                                                    x-model="selectedMachine"
+                                                    :disabled="!selectedUnit"
+                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                                <option value="">Pilih Mesin</option>
+                                                <template x-for="machine in machines" :key="machine.id">
+                                                    <option :value="machine.id" x-text="machine.name"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Form Input Fields - Only shown when unit and machine are selected -->
+                                <div x-show="showForm" 
+                                     x-transition:enter="transition ease-out duration-300"
+                                     x-transition:enter-start="opacity-0 transform -translate-y-4"
+                                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                                     class="space-y-6">
+                                    
+                                    <!-- Daya Section -->
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium text-gray-900 mb-4">Daya (MW)</h4>
+                                        <div class="grid grid-cols-3 gap-4">
+                                            <div>
+                                                <label class="block text-sm text-gray-700">Terpasang</label>
+                                                <input type="number" 
+                                                       step="0.001" 
+                                                       name="installed_power" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-gray-700">DMN</label>
+                                                <input type="number" 
+                                                       step="0.001" 
+                                                       name="dmn_power" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-gray-700">Mampu</label>
+                                                <input type="number" 
+                                                       step="0.001" 
+                                                       name="capable_power" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Machine Selection -->
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Pilih Mesin
-                                        </label>
-                                        <select name="machine_id" 
-                                                x-model="selectedMachine"
-                                                :disabled="!selectedUnit"
-                                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                            <option value="">Pilih Mesin</option>
-                                            <template x-for="machine in machines" :key="machine.id">
-                                                <option :value="machine.id" x-text="machine.name"></option>
-                                            </template>
-                                        </select>
+                                    <!-- Beban Section -->
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium text-gray-900 mb-4">Beban (MW)</h4>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm text-gray-700">WBP</label>
+                                                <input type="number" 
+                                                       step="0.001" 
+                                                       name="peak_load" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-gray-700">LWBP</label>
+                                                <input type="number" 
+                                                       step="0.001" 
+                                                       name="off_peak_load" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Produksi Section -->
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium text-gray-900 mb-4">Produksi (kWh)</h4>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm text-gray-700">Bruto</label>
+                                                <input type="number" 
+                                                       step="0.001" 
+                                                       name="gross_production" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-gray-700">Netto</label>
+                                                <input type="number" 
+                                                       step="0.001" 
+                                                       name="net_production" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Jam Operasi Section -->
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="font-medium text-gray-900 mb-4">Jam Operasi</h4>
+                                        <div class="grid grid-cols-4 gap-4">
+                                            <div>
+                                                <label class="block text-sm text-gray-700">OPR</label>
+                                                <input type="number" 
+                                                       step="0.01" 
+                                                       name="operating_hours" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-gray-700">PO</label>
+                                                <input type="number" 
+                                                       step="0.01" 
+                                                       name="planned_outage" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-gray-700">MO</label>
+                                                <input type="number" 
+                                                       step="0.01" 
+                                                       name="maintenance_outage" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm text-gray-700">FO</label>
+                                                <input type="number" 
+                                                       step="0.01" 
+                                                       name="forced_outage" 
+                                                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="flex justify-end">
+                                        <button type="submit" 
+                                                class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                            <i class="fas fa-save mr-2"></i>
+                                            Simpan Data
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Form Input Fields - Only shown when unit and machine are selected -->
-                            <div x-show="showForm" 
-                                 x-transition:enter="transition ease-out duration-300"
-                                 x-transition:enter-start="opacity-0 transform -translate-y-4"
-                                 x-transition:enter-end="opacity-100 transform translate-y-0"
-                                 class="space-y-6">
-                                
-                                <!-- Daya Section -->
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Daya (MW)</h4>
-                                    <div class="grid grid-cols-3 gap-4">
-                                        <div>
-                                            <label class="block text-sm text-gray-700">Terpasang</label>
-                                            <input type="number" 
-                                                   step="0.001" 
-                                                   name="installed_power" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-gray-700">DMN</label>
-                                            <input type="number" 
-                                                   step="0.001" 
-                                                   name="dmn_power" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-gray-700">Mampu</label>
-                                            <input type="number" 
-                                                   step="0.001" 
-                                                   name="capable_power" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Beban Section -->
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Beban (MW)</h4>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm text-gray-700">WBP</label>
-                                            <input type="number" 
-                                                   step="0.001" 
-                                                   name="peak_load" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-gray-700">LWBP</label>
-                                            <input type="number" 
-                                                   step="0.001" 
-                                                   name="off_peak_load" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Produksi Section -->
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Produksi (kWh)</h4>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm text-gray-700">Bruto</label>
-                                            <input type="number" 
-                                                   step="0.001" 
-                                                   name="gross_production" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-gray-700">Netto</label>
-                                            <input type="number" 
-                                                   step="0.001" 
-                                                   name="net_production" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Jam Operasi Section -->
-                                <div class="bg-gray-50 p-4 rounded-lg">
-                                    <h4 class="font-medium text-gray-900 mb-4">Jam Operasi</h4>
-                                    <div class="grid grid-cols-4 gap-4">
-                                        <div>
-                                            <label class="block text-sm text-gray-700">OPR</label>
-                                            <input type="number" 
-                                                   step="0.01" 
-                                                   name="operating_hours" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-gray-700">PO</label>
-                                            <input type="number" 
-                                                   step="0.01" 
-                                                   name="planned_outage" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-gray-700">MO</label>
-                                            <input type="number" 
-                                                   step="0.01" 
-                                                   name="maintenance_outage" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm text-gray-700">FO</label>
-                                            <input type="number" 
-                                                   step="0.01" 
-                                                   name="forced_outage" 
-                                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Submit Button -->
-                                <div class="flex justify-end">
-                                    <button type="submit" 
-                                            class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                        <i class="fas fa-save mr-2"></i>
-                                        Simpan Data
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
 
-                <!-- View Data -->
-                <div x-show="activeTab === 'view'" class="bg-white shadow rounded-lg overflow-hidden">
-                    <div class="p-6">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Data Unit Hari Ini</h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Daya (kW)</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beban Puncak</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produksi</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pemakaian Sendiri</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jam Operasi</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @forelse($todayData as $data)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">{{ $data->powerUnit->name }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ number_format($data->installed_power, 0) }}</div>
-                                            <div class="text-xs text-gray-500">DMN: {{ number_format($data->dmn_power, 0) }}</div>
-                                            <div class="text-xs text-gray-500">Mampu: {{ number_format($data->capable_power, 0) }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">WBP: {{ number_format($data->peak_load, 0) }}</div>
-                                            <div class="text-xs text-gray-500">LWBP: {{ number_format($data->off_peak_load, 0) }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">Bruto: {{ number_format($data->gross_production, 0) }}</div>
-                                            <div class="text-xs text-gray-500">Netto: {{ number_format($data->net_production, 0) }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">OPR: {{ number_format($data->operating_hours, 1) }}</div>
-                                            <div class="text-xs text-gray-500">PO: {{ number_format($data->planned_outage, 1) }}</div>
-                                            <div class="text-xs text-gray-500">MO: {{ number_format($data->maintenance_outage, 1) }}</div>
-                                            <div class="text-xs text-gray-500">FO: {{ number_format($data->forced_outage, 1) }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                {{ $data->operational_status === 'operational' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                                {{ $data->operational_status }}
-                                            </span>
-                                            @if($data->machine_trips > 0 || $data->electrical_trips > 0)
-                                            <div class="text-xs text-gray-500 mt-1">
-                                                Trip: M{{ $data->machine_trips }}/L{{ $data->electrical_trips }}
-                                            </div>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                                            Belum ada data untuk hari ini
-                                        </td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                <!-- View Data Tab -->
+                <div x-show="activeTab === 'view'"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100">
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Data Unit Hari Ini</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mesin</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Daya (MW)</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beban</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produksi</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jam Operasi</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @forelse($todayData as $data)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ $data->unit->name }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">{{ $data->machine->name }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">{{ number_format($data->installed_power, 2) }}</div>
+                                                <div class="text-xs text-gray-500">DMN: {{ number_format($data->dmn_power, 2) }}</div>
+                                                <div class="text-xs text-gray-500">Mampu: {{ number_format($data->capable_power, 2) }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">WBP: {{ number_format($data->peak_load, 2) }}</div>
+                                                <div class="text-xs text-gray-500">LWBP: {{ number_format($data->off_peak_load, 2) }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">Bruto: {{ number_format($data->gross_production, 2) }}</div>
+                                                <div class="text-xs text-gray-500">Netto: {{ number_format($data->net_production, 2) }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">OPR: {{ number_format($data->operating_hours, 1) }}</div>
+                                                <div class="text-xs text-gray-500">PO: {{ number_format($data->planned_outage, 1) }}</div>
+                                                <div class="text-xs text-gray-500">MO: {{ number_format($data->maintenance_outage, 1) }}</div>
+                                                <div class="text-xs text-gray-500">FO: {{ number_format($data->forced_outage, 1) }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    {{ $data->operating_hours > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                    {{ $data->operating_hours > 0 ? 'Operasi' : 'Tidak Operasi' }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                                Belum ada data untuk hari ini
+                                            </td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
