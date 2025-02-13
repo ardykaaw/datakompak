@@ -76,4 +76,15 @@ class UnitMachineController extends Controller
         return redirect()->route('unit-mesin.show', $unit)
             ->with('success', 'Mesin berhasil ditambahkan');
     }
+
+    public function destroyMachine(Unit $unit, Machine $machine)
+    {
+        // Pastikan mesin benar-benar milik unit ini
+        if ($machine->unit_id !== $unit->id) {
+            return back()->with('error', 'Mesin tidak ditemukan dalam unit ini.');
+        }
+
+        $machine->delete();
+        return back()->with('success', 'Mesin berhasil dihapus.');
+    }
 } 
