@@ -87,4 +87,16 @@ class UnitMachineController extends Controller
         $machine->delete();
         return back()->with('success', 'Mesin berhasil dihapus.');
     }
+
+    public function mesinIndex()
+    {
+        $units = Unit::with('machines')->get();
+        return view('unit-mesin.mesin', compact('units'));
+    }
+
+    public function unitIndex()
+    {
+        $units = Unit::with('machines')->get();
+        return view('unit-mesin.unit', compact('units'));
+    }
 } 

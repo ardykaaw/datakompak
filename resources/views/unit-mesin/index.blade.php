@@ -44,137 +44,94 @@
         <!-- Main Content Area -->
         <main class="p-4">
             <div class="max-w-7xl mx-auto">
-                <!-- Cards Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <!-- Total Mesin Card -->
-                    <div class="bg-white rounded-xl shadow-sm">
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-4">
+                <!-- Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <!-- Mesin Card -->
+                    <a href="{{ route('unit-mesin.mesin') }}" class="block">
+                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6 text-white">
+                            <div class="flex items-center justify-between mb-4">
                                 <div>
-                                    <h2 class="text-xl font-semibold text-gray-800">Total Mesin</h2>
-                                    <p class="text-sm text-gray-500">Daftar seluruh mesin</p>
+                                    <h2 class="text-xl font-semibold">Total Mesin</h2>
+                                    <p class="text-sm opacity-75">Kelola data mesin</p>
                                 </div>
-                                <button onclick="Swal.fire({
-                                    title: 'Tambah Mesin Baru',
-                                    html: `
-                                        <form id='addMachineForm' class='space-y-4'>
-                                            <select id='unitSelect' class='w-full px-3 py-2 border rounded-lg'>
-                                                <option value=''>Pilih Unit</option>
-                                                @foreach($units as $unit)
-                                                    <option value='{{ $unit->id }}'>{{ $unit->name }}</option>
-                                                @endforeach
-                                            </select>
-                                            <input type='text' id='machineName' class='w-full px-3 py-2 border rounded-lg' placeholder='Nama Mesin'>
-                                            <input type='text' id='machineCode' class='w-full px-3 py-2 border rounded-lg' placeholder='Kode Mesin'>
-                                            <textarea id='machineSpecs' class='w-full px-3 py-2 border rounded-lg' placeholder='Spesifikasi'></textarea>
-                                        </form>
-                                    `,
-                                    showCancelButton: true,
-                                    confirmButtonText: 'Simpan',
-                                    cancelButtonText: 'Batal',
-                                    confirmButtonColor: '#3B82F6',
-                                    preConfirm: () => {
-                                        const unitId = document.getElementById('unitSelect').value;
-                                        if (!unitId) {
-                                            Swal.showValidationMessage('Silakan pilih unit');
-                                            return false;
-                                        }
-                                        
-                                        const form = document.createElement('form');
-                                        form.method = 'POST';
-                                        form.action = `/unit-mesin/${unitId}/machines`;
-                                        
-                                        const csrf = document.createElement('input');
-                                        csrf.type = 'hidden';
-                                        csrf.name = '_token';
-                                        csrf.value = '{{ csrf_token() }}';
-                                        
-                                        const name = document.createElement('input');
-                                        name.type = 'hidden';
-                                        name.name = 'name';
-                                        name.value = document.getElementById('machineName').value;
-                                        
-                                        const code = document.createElement('input');
-                                        code.type = 'hidden';
-                                        code.name = 'code';
-                                        code.value = document.getElementById('machineCode').value;
-                                        
-                                        const specs = document.createElement('input');
-                                        specs.type = 'hidden';
-                                        specs.name = 'specifications';
-                                        specs.value = document.getElementById('machineSpecs').value;
-                                        
-                                        form.appendChild(csrf);
-                                        form.appendChild(name);
-                                        form.appendChild(code);
-                                        form.appendChild(specs);
-                                        
-                                        document.body.appendChild(form);
-                                        form.submit();
-                                    }
-                                })" 
-                                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                                    + Tambah Mesin
-                                </button>
+                                <div class="text-3xl">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
                             </div>
-                            
-                            <div class="divide-y divide-gray-200">
-                                @php $totalMachines = 0; @endphp
-                                @foreach($units as $unit)
-                                    @foreach($unit->machines as $machine)
-                                        @php $totalMachines++; @endphp
-                                        <div class="py-3">
-                                            <div class="flex justify-between items-start">
-                                                <div>
-                                                    <h4 class="text-base font-medium text-gray-800">{{ $machine->name }}</h4>
-                                                    <p class="text-sm text-gray-500">Unit: {{ $unit->name }}</p>
-                                                    @if($machine->code)
-                                                        <p class="text-sm text-gray-500">Kode: {{ $machine->code }}</p>
-                                                    @endif
-                                                </div>
-                                                <div class="flex space-x-2">
-                                                    <button class="text-gray-400 hover:text-blue-500">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <form action="{{ route('unit-mesin.machines.destroy', [$unit, $machine]) }}" method="POST" class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" 
-                                                                class="text-gray-400 hover:text-red-500"
-                                                                onclick="return confirm('Apakah Anda yakin ingin menghapus mesin ini?')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @endforeach
-                                @if($totalMachines === 0)
-                                    <div class="py-3 text-center text-gray-500">
-                                        Belum ada mesin yang ditambahkan.
-                                    </div>
-                                @endif
+                            <div class="text-2xl font-bold mb-2">
+                                @php
+                                    $totalMachines = 0;
+                                    foreach($units as $unit) {
+                                        $totalMachines += $unit->machines->count();
+                                    }
+                                @endphp
+                                {{ $totalMachines }}
+                            </div>
+                            <div class="text-sm opacity-75">Lihat semua mesin →</div>
+                        </div>
+                    </a>
+
+                    <!-- Unit Card -->
+                    <a href="{{ route('unit-mesin.unit') }}" class="block">
+                        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6 text-white">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h2 class="text-xl font-semibold">Unit</h2>
+                                    <p class="text-sm opacity-75">Kelola data unit</p>
+                                </div>
+                                <div class="text-3xl">
+                                    <i class="fas fa-industry"></i>
+                                </div>
+                            </div>
+                            <div class="text-2xl font-bold mb-2">
+                                {{ $units->count() }}
+                            </div>
+                            <div class="text-sm opacity-75">Lihat semua unit →</div>
+                        </div>
+                    </a>
+
+                    <!-- Overview Card -->
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="text-xl font-semibold">Ringkasan</h2>
+                                <p class="text-sm opacity-75">Statistik umum</p>
+                            </div>
+                            <div class="text-3xl">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm opacity-75">Rata-rata Mesin per Unit:</span>
+                                <span class="font-semibold">
+                                    {{ $units->count() > 0 ? number_format($totalMachines / $units->count(), 1) : '0' }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm opacity-75">Unit Aktif:</span>
+                                <span class="font-semibold">{{ $units->count() }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm opacity-75">Total Mesin:</span>
+                                <span class="font-semibold">{{ $totalMachines }}</span>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Unit Card -->
-                    <div class="bg-white rounded-xl shadow-sm">
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <div>
-                                    <h2 class="text-xl font-semibold text-gray-800">Unit</h2>
-                                    <p class="text-sm text-gray-500">Daftar unit pembangkit</p>
-                                </div>
-                                <a href="{{ route('unit-mesin.create') }}" 
-                                   class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                                    + Tambah Unit
-                                </a>
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-xl font-semibold text-gray-800">Aktivitas Terbaru</h2>
+                                <p class="text-sm text-gray-500">Daftar unit dan mesin terbaru</p>
                             </div>
-                            
-                            <div class="divide-y divide-gray-200">
-                                @forelse($units as $unit)
+                        </div>
+                        
+                        <div class="divide-y divide-gray-200">
+                            @foreach($units->take(5) as $unit)
                                 <div class="py-3">
                                     <div class="flex justify-between items-center">
                                         <div>
@@ -192,25 +149,26 @@
                                                class="text-gray-400 hover:text-blue-500">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('unit-mesin.destroy', $unit) }}" method="POST" class="inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" 
-                                                        class="text-gray-400 hover:text-red-500"
-                                                        onclick="return confirm('Apakah Anda yakin ingin menghapus unit ini?')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
                                         </div>
                                     </div>
                                 </div>
-                                @empty
+                            @endforeach
+
+                            @if($units->isEmpty())
                                 <div class="py-3 text-center text-gray-500">
-                                    Belum ada unit yang ditambahkan.
+                                    Belum ada data unit dan mesin.
                                 </div>
-                                @endforelse
-                            </div>
+                            @endif
                         </div>
+
+                        @if($units->count() > 5)
+                            <div class="mt-4 text-center">
+                                <a href="{{ route('unit-mesin.unit') }}" 
+                                   class="text-blue-500 hover:text-blue-600 text-sm">
+                                    Lihat semua unit →
+                                </a>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
