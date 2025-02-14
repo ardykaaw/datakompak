@@ -38,6 +38,7 @@ Route::middleware([
     // Ikhtisar Harian
     Route::get('/ikhtisar-harian', [IkhtisarHarianController::class, 'index'])->name('ikhtisar-harian');
     Route::post('/ikhtisar-harian/store', [IkhtisarHarianController::class, 'store'])->name('ikhtisar-harian.store');
+    Route::get('/ikhtisar-harian/view', [IkhtisarHarianController::class, 'view'])->name('ikhtisar-harian.view');
     
     // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');

@@ -144,6 +144,102 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+        /* Custom scrollbar styling */
+        .overflow-x-auto::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* Tambahkan CSS untuk border dan width kolom */
+        .table-cell-border {
+            @apply border-r last:border-r-0;
+        }
+        
+        .subcol-border {
+            @apply border-r last:border-r-0;
+        }
+        
+        .input-group {
+            @apply border-r last:border-r-0 px-2;
+        }
+        
+        /* Custom widths untuk kolom spesifik */
+        .w-mesin {
+            min-width: 120px;
+        }
+        
+        .w-daya {
+            min-width: 250px;
+        }
+        
+        .w-beban {
+            min-width: 180px;
+        }
+        
+        .w-produksi {
+            min-width: 200px;
+        }
+        
+        .w-pemakaian-sendiri {
+            min-width: 280px;
+        }
+        
+        .w-jam-operasi {
+            min-width: 300px;
+        }
+        
+        .w-trip {
+            min-width: 180px;
+        }
+        
+        .w-derating {
+            min-width: 280px;
+        }
+        
+        .w-kinerja {
+            min-width: 300px;
+        }
+        
+        .w-capability {
+            min-width: 150px;
+        }
+        
+        .w-nof {
+            min-width: 150px;
+        }
+        
+        .w-jsi {
+            min-width: 120px;
+        }
+        
+        .w-bahan-bakar {
+            min-width: 400px;
+        }
+        
+        .w-pelumas {
+            min-width: 500px;
+        }
+        
+        .w-efisiensi {
+            min-width: 280px;
+        }
+        
+        .w-keterangan {
+            min-width: 200px;
+        }
     </style>
 
     <!-- Main Content -->
@@ -164,6 +260,11 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm text-gray-500">{{ now()->format('d M Y') }}</span>
+                    <a href="{{ route('ikhtisar-harian.view') }}" 
+                    class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors duration-200">
+                     <i class="fas fa-table mr-2"></i>
+                     Lihat Data
+                 </a>
                     <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200">
                         <i class="fas fa-sync-alt mr-2"></i>
                         Refresh Data
@@ -258,25 +359,7 @@
                     </div>
                 </div>
 
-                <!-- Tabs Navigation -->
-                <div class="mb-6">
-                    <div class="border-b border-gray-200">
-                        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                            <button @click="activeTab = 'input'"
-                                    :class="{'border-blue-500 text-blue-600': activeTab === 'input',
-                                            'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'input'}"
-                                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                                Input Data
-                            </button>
-                            <button @click="activeTab = 'view'"
-                                    :class="{'border-blue-500 text-blue-600': activeTab === 'view',
-                                            'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'view'}"
-                                    class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
-                                Lihat Data
-                            </button>
-                        </nav>
-                    </div>
-                </div>
+               
 
                 <!-- Input Data Tab -->
                 <div x-show="activeTab === 'input'" 
@@ -299,125 +382,409 @@
                         @foreach($units as $unit)
                         <div class="bg-white shadow rounded-lg p-6 mb-6">
                             <!-- Unit Header -->
-                            <div class="mb-6 text-center">
+                            <div class="mb-6 text-left  ">
                                 <h2 class="text-xl font-bold text-gray-800">{{ $unit->name }}</h2>
                                 <p class="text-sm text-gray-600">Data Operasional Harian</p>
                             </div>
 
-                            <!-- Machines Table -->
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 border">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r">Mesin</th>
-                                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r">Daya (MW)</th>
-                                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r">Beban (MW)</th>
-                                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r">Produksi (kWh)</th>
-                                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Jam Operasi</th>
-                                        </tr>
-                                        <tr class="bg-gray-100 text-xs">
-                                            <th class="border-r"></th>
-                                            <th class="px-4 py-2 border-r">
-                                                <div class="grid grid-cols-3 gap-2 text-center">
-                                                    <span class="border-r px-2">Terpasang</span>
-                                                    <span class="border-r px-2">DMN</span>
-                                                    <span class="px-2">Mampu</span>
-                                                </div>
-                                            </th>
-                                            <th class="px-4 py-2 border-r">
-                                                <div class="grid grid-cols-2 gap-2 text-center">
-                                                    <span class="border-r px-2">WBP</span>
-                                                    <span class="px-2">LWBP</span>
-                                                </div>
-                                            </th>
-                                            <th class="px-4 py-2 border-r">
-                                                <div class="grid grid-cols-2 gap-2 text-center">
-                                                    <span class="border-r px-2">Bruto</span>
-                                                    <span class="px-2">Netto</span>
-                                                </div>
-                                            </th>
-                                            <th class="px-4 py-2">
-                                                <div class="grid grid-cols-4 gap-2 text-center">
-                                                    <span class="border-r px-2">OPR</span>
-                                                    <span class="border-r px-2">PO</span>
-                                                    <span class="border-r px-2">MO</span>
-                                                    <span class="px-2">FO</span>
-                                                </div>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        @foreach($unit->machines as $machine)
-                                        <tr>
-                                            <td class="px-4 py-3 border-r">
-                                                <div class="text-sm font-medium text-gray-900 text-center">{{ $machine->name }}</div>
-                                                <input type="hidden" name="data[{{ $machine->id }}][unit_id]" value="{{ $unit->id }}">
-                                                <input type="hidden" name="data[{{ $machine->id }}][machine_id]" value="{{ $machine->id }}">
-                                            </td>
-                                            <td class="px-4 py-3 border-r">
-                                                <div class="grid grid-cols-3 gap-2">
-                                                    <div class="border-r pr-2">
-                                                        <input type="number" step="0.001" name="data[{{ $machine->id }}][installed_power]" 
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                    <div class="border-r pr-2">
-                                                        <input type="number" step="0.001" name="data[{{ $machine->id }}][dmn_power]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                    <div>
-                                                        <input type="number" step="0.001" name="data[{{ $machine->id }}][capable_power]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3 border-r">
-                                                <div class="grid grid-cols-2 gap-2">
-                                                    <div class="border-r pr-2">
-                                                        <input type="number" step="0.001" name="data[{{ $machine->id }}][peak_load]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                    <div>
-                                                        <input type="number" step="0.001" name="data[{{ $machine->id }}][off_peak_load]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3 border-r">
-                                                <div class="grid grid-cols-2 gap-2">
-                                                    <div class="border-r pr-2">
-                                                        <input type="number" step="0.001" name="data[{{ $machine->id }}][gross_production]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                    <div>
-                                                        <input type="number" step="0.001" name="data[{{ $machine->id }}][net_production]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3">
-                                                <div class="grid grid-cols-4 gap-2">
-                                                    <div class="border-r pr-2">
-                                                        <input type="number" step="0.01" name="data[{{ $machine->id }}][operating_hours]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                    <div class="border-r pr-2">
-                                                        <input type="number" step="0.01" name="data[{{ $machine->id }}][planned_outage]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                    <div class="border-r pr-2">
-                                                        <input type="number" step="0.01" name="data[{{ $machine->id }}][maintenance_outage]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                    <div>
-                                                        <input type="number" step="0.01" name="data[{{ $machine->id }}][forced_outage]"
-                                                               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                            <!-- Machines Table with Horizontal Scroll -->
+                            <div class="relative">
+                                <div class="overflow-x-auto overflow-y-visible shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                                    <div class="min-w-full inline-block align-middle">
+                                        <table class="min-w-full divide-y divide-gray-200 border table-fixed" style="min-width: 3800px;">
+                                            <thead class="bg-gray-50">
+                                                <tr>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-mesin">Mesin</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-daya">Daya (MW)</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-beban">Beban Puncak (kW)</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-beban">Ratio Daya Kit (%)</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-produksi">Produksi (kWh)</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-pemakaian-sendiri">Pemakaian Sendiri</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-jam-operasi">Jam Periode</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-jam-operasi">Jam Operasi</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-trip">Trip Non OMC</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-derating">Derating</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-kinerja">Kinerja Pembangkit</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-capability">Capability Factor (%)</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-nof">Nett Operating Factor (%)</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-jsi">JSI</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-bahan-bakar">Pemakaian Bahan Bakar/Baku</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-pelumas">Pemakaian Pelumas</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-r w-efisiensi">Effisiensi</th>
+                                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-keterangan">Ket.</th>
+                                                </tr>
+                                                <tr class="bg-gray-100 text-xs">
+                                                    <th class="border-r"></th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="grid grid-cols-3 gap-0">
+                                                            <span class="subcol-border px-2">Terpasang</span>
+                                                            <span class="subcol-border px-2">DMN</span>
+                                                            <span class="px-2">Mampu</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="grid grid-cols-2 gap-0">
+                                                            <span class="subcol-border px-2">Siang</span>
+                                                            <span class="px-2">Malam</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="text-center px-2">
+                                                            <span>Kit</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="grid grid-cols-2 gap-0">
+                                                            <span class="subcol-border px-2">Bruto</span>
+                                                            <span class="px-2">Netto</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="grid grid-cols-3 gap-0">
+                                                            <span class="subcol-border px-2">Aux (kWh)</span>
+                                                            <span class="subcol-border px-2">Susut Trafo (kWh)</span>
+                                                            <span class="px-2">Persentase (%)</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="text-center px-2">
+                                                            <span>Jam</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2">
+                                                        <div class="grid grid-cols-5 gap-0">
+                                                            <span class="subcol-border px-2">OPR</span>
+                                                            <span class="subcol-border px-2">STANDBY</span>
+                                                            <span class="subcol-border px-2">PO</span>
+                                                            <span class="subcol-border px-2">MO</span>
+                                                            <span class="px-2">FO</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="grid grid-cols-2 gap-0">
+                                                            <span class="subcol-border px-2">Mesin (kali)</span>
+                                                            <span class="px-2">Listrik (kali)</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2">
+                                                        <div class="grid grid-cols-4 gap-0">
+                                                            <span class="subcol-border px-2">EFDH</span>
+                                                            <span class="subcol-border px-2">EPDH</span>
+                                                            <span class="subcol-border px-2">EUDH</span>
+                                                            <span class="px-2">ESDH</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="grid grid-cols-4 gap-0">
+                                                            <span class="subcol-border px-2">EAF (%)</span>
+                                                            <span class="subcol-border px-2">SOF (%)</span>
+                                                            <span class="subcol-border px-2">EFOR (%)</span>
+                                                            <span class="px-2">SdOF (Kali)</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2">
+                                                        <div class="text-center">
+                                                            <span class="px-2">NCF</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="text-center">
+                                                            <span class="px-2">NOF</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="text-center">
+                                                            <span class="px-2">Jam</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2">
+                                                        <div class="grid grid-cols-5 gap-0">
+                                                            <span class="subcol-border px-2">HSD (Liter)</span>
+                                                            <span class="subcol-border px-2">B35 (Liter)</span>
+                                                            <span class="subcol-border px-2">MFO (Liter)</span>
+                                                            <span class="subcol-border px-2">Total BBM (Liter)</span>
+                                                            <span class="px-2">Air (M³)</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="grid grid-cols-7 gap-0">
+                                                            <span class="subcol-border px-2">Meditran SX 15W/40 CH-4 (LITER)</span>
+                                                            <span class="subcol-border px-2">Salyx 420 (LITER)</span>
+                                                            <span class="subcol-border px-2">Salyx 430 (LITER)</span>
+                                                            <span class="subcol-border px-2">TravoLube A (LITER)</span>
+                                                            <span class="subcol-border px-2">Turbolube 46 (LITER)</span>
+                                                            <span class="subcol-border px-2">Turbolube 68 (LITER)</span>
+                                                            <span class="px-2">TOTAL (LITER)</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2 border-r">
+                                                        <div class="grid grid-cols-3 gap-0">
+                                                            <span class="subcol-border px-2">SFC/SCC (LITER/KWH)</span>
+                                                            <span class="subcol-border px-2">TARA KALOR/NPHR (KCAL/KWH)</span>
+                                                            <span class="px-2">SLC (CC/KWH)</span>
+                                                        </div>
+                                                    </th>
+                                                    <th class="px-4 py-2">
+                                                        <div class="text-center">
+                                                            <span class="px-2">Keterangan</span>
+                                                        </div>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-gray-200">
+                                                @foreach($unit->machines as $machine)
+                                                <tr>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="text-sm font-medium text-gray-900 text-center">{{ $machine->name }}</div>
+                                                        <input type="hidden" name="data[{{ $machine->id }}][unit_id]" value="{{ $unit->id }}">
+                                                        <input type="hidden" name="data[{{ $machine->id }}][machine_id]" value="{{ $machine->id }}">
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="grid grid-cols-3 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][installed_power]" 
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][dmn_power]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][capable_power]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="grid grid-cols-2 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][peak_load_day]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][peak_load_night]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="px-2">
+                                                            <input type="number" step="0.01" name="data[{{ $machine->id }}][kit_ratio]"
+                                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="grid grid-cols-2 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][gross_production]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][net_production]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="grid grid-cols-3 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][aux_power]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][transformer_losses]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][usage_percentage]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="px-2">
+                                                            <input type="number" step="0.01" name="data[{{ $machine->id }}][period_hours]"
+                                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="grid grid-cols-5 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][operating_hours]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][standby_hours]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][planned_outage]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][maintenance_outage]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][forced_outage]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="grid grid-cols-2 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="1" name="data[{{ $machine->id }}][trip_machine]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="1" name="data[{{ $machine->id }}][trip_electrical]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="grid grid-cols-4 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][efdh]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][epdh]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][eudh]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][esdh]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="grid grid-cols-4 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][eaf]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][sof]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][efor]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="1" name="data[{{ $machine->id }}][sdof]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="px-2">
+                                                            <input type="number" step="0.01" name="data[{{ $machine->id }}][ncf]"
+                                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="px-2">
+                                                            <input type="number" step="0.01" name="data[{{ $machine->id }}][nof]"
+                                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="px-2">
+                                                            <input type="number" step="0.01" name="data[{{ $machine->id }}][jsi]"
+                                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="grid grid-cols-5 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][hsd_fuel]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][b35_fuel]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][mfo_fuel]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][total_fuel]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][water_usage]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="grid grid-cols-7 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][meditran_oil]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][salyx_420]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][salyx_430]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][travolube_a]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][turbolube_46]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][turbolube_68]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.01" name="data[{{ $machine->id }}][total_oil]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3 border-r">
+                                                        <div class="grid grid-cols-3 gap-0">
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][sfc_scc]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][nphr]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                            <div class="input-group">
+                                                                <input type="number" step="0.001" name="data[{{ $machine->id }}][slc]"
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-3">
+                                                        <div class="px-2">
+                                                            <input type="text" name="data[{{ $machine->id }}][notes]"
+                                                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         @endforeach
@@ -441,7 +808,7 @@
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Daya (MW)</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beban</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produksi</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jam Operasi</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jam Indikator</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                         </tr>
                                     </thead>
@@ -460,8 +827,8 @@
                                                 <div class="text-xs text-gray-500">Mampu: {{ number_format($data->capable_power, 2) }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-900">WBP: {{ number_format($data->peak_load, 2) }}</div>
-                                                <div class="text-xs text-gray-500">LWBP: {{ number_format($data->off_peak_load, 2) }}</div>
+                                                <div class="text-sm text-gray-900">Siang: {{ number_format($data->peak_load_day, 2) }}</div>
+                                                <div class="text-xs text-gray-500">Malam: {{ number_format($data->peak_load_night, 2) }}</div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm text-gray-900">Bruto: {{ number_format($data->gross_production, 2) }}</div>

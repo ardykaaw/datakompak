@@ -44,4 +44,25 @@ class IkhtisarHarianController extends Controller
 
         return back()->with('success', 'Data berhasil disimpan');
     }
+
+    public function view(Request $request)
+    {
+        $query = IkhtisarHarian::with('machine.unit')
+            ->when($request->unit, function($q) use ($request) {
+                return $q->whereHas('machine.unit', function($q) use ($request) {
+                    $q->where('id', $request->unit);
+                });
+            })
+            ->when($request->start_date, function($q) use ($request) {
+                return $q->where('created_at', '>=', $request->start_date);
+            })
+            ->when($request->end_date, function($q) use ($request) {
+                return $q->where('created_at', '<=', $request->end_date . ' 23:59:59');
+            });
+
+        $data = $query->paginate(15);
+        $units = Unit::all();
+
+        return view('ikhtisar-harian-view', compact('data', 'units'));
+    }
 }   
