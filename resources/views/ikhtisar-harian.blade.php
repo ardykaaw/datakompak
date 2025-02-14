@@ -2,6 +2,10 @@
 
 @section('title', 'Ikhtisar Harian')
 
+@php
+    $baseUrl = url('/');
+@endphp
+
 @section('content')
 <div class="min-h-screen bg-gray-100"
      x-data="{ 
@@ -28,9 +32,14 @@
         async loadMachines() {
             if (this.selectedUnit) {
                 try {
-                    const response = await fetch(`/api/units/${this.selectedUnit}/machines`);
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    this.machines = await response.json();
+                    const response = await fetch(`{{ $baseUrl }}/api/units/${this.selectedUnit}/machines`);
+                    if (!response.ok) {
+                        console.error('Response not OK:', response.status);
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    console.log('API Response:', data); // Debug log
+                    this.machines = data;
                     this.selectedMachine = null;
                     this.showForm = false;
                 } catch (error) {
@@ -145,7 +154,7 @@
                             class="text-gray-500 hover:text-gray-600 focus:outline-none mr-4">
                         <i class="fas fa-grip-lines text-xl"></i>
                     </button>
-                    <h1 class="text-xl font-semibold text-gray-900">Ikhtisar Harian PLTD WUAWUA</h1>
+                    <h1 class="text-xl font-semibold text-gray-900">Ikhtisar Harian</h1>
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm text-gray-500">{{ now()->format('d M Y') }}</span>
@@ -272,28 +281,7 @@
                         <!-- Form Input Section -->
                         <form method="POST" 
                               action="{{ route('ikhtisar-harian.store') }}"
-                              x-data="{
-                                  selectedUnit: null,
-                                  selectedMachine: null,
-                                  machines: [],
-                                  showForm: false,
-                                  async loadMachines() {
-                                      if (this.selectedUnit) {
-                                          const response = await fetch(`/api/units/${this.selectedUnit}/machines`);
-                                          this.machines = await response.json();
-                                          this.selectedMachine = null;
-                                          this.showForm = false;
-                                      } else {
-                                          this.machines = [];
-                                          this.selectedMachine = null;
-                                          this.showForm = false;
-                                      }
-                                  },
-                                  watchMachine() {
-                                      this.showForm = this.selectedUnit && this.selectedMachine ? true : false;
-                                  }
-                              }"
-                              @change="watchMachine()">
+                              x-data="formHandler()">
                             @csrf
                             
                             <!-- Unit & Machine Selection -->
@@ -534,4 +522,43 @@
         </main>
     </div>
 </div>
+
+<script>
+    function formHandler() {
+        return {
+            selectedUnit: null,
+            selectedMachine: null,
+            machines: [],
+            showForm: false,
+            async loadMachines() {
+                if (this.selectedUnit) {
+                    try {
+                        const response = await fetch(`{{ $baseUrl }}/api/units/${this.selectedUnit}/machines`);
+                        if (!response.ok) {
+                            console.error('Response not OK:', response.status);
+                            throw new Error('Network response was not ok');
+                        }
+                        const data = await response.json();
+                        console.log('API Response:', data); // Debug log
+                        this.machines = data;
+                        this.selectedMachine = null;
+                        this.showForm = false;
+                    } catch (error) {
+                        console.error('Error loading machines:', error);
+                        this.machines = [];
+                        this.selectedMachine = null;
+                        this.showForm = false;
+                    }
+                } else {
+                    this.machines = [];
+                    this.selectedMachine = null;
+                    this.showForm = false;
+                }
+            },
+            watchMachine() {
+                this.showForm = this.selectedUnit && this.selectedMachine ? true : false;
+            }
+        }
+    }
+</script>
 @endsection 
