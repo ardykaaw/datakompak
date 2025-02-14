@@ -2,31 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Data;
+use App\Models\IkhtisarHarian;
 use App\Models\Unit;
 use Carbon\Carbon;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class IkhtisarHarianController extends Controller
 {
     public function index()
     {
-        // Ambil semua unit
         $units = Unit::all();
+        $todayData = IkhtisarHarian::with(['unit', 'machine'])
+            ->whereDate('created_at', Carbon::today())
+            ->get();
         
-        // Ambil data hari ini
-        $todayData = Data::whereDate('created_at', Carbon::today())->get();
-        
-        // Ambil data terbaru
-        $recentData = Data::latest()->take(5)->get();
-        
-        return view('ikhtisar-harian', compact('units', 'todayData', 'recentData'));
+        return view('ikhtisar-harian', compact('units', 'todayData'));
     }
 
     public function store(Request $request)
     {
-        // Validation and storing logic will go here
+        $data = $request->validate([
+            'data.*.unit_id' => 'required|exists:units,id',
+            'data.*.machine_id' => 'required|exists:machines,id',
+            'data.*.installed_power' => 'required|numeric',
+            'data.*.dmn_power' => 'required|numeric',
+            'data.*.capable_power' => 'required|numeric',
+            'data.*.peak_load' => 'required|numeric',
+            'data.*.off_peak_load' => 'required|numeric',
+            'data.*.gross_production' => 'required|numeric',
+            'data.*.net_production' => 'required|numeric',
+            'data.*.operating_hours' => 'required|numeric',
+            'data.*.planned_outage' => 'required|numeric',
+            'data.*.maintenance_outage' => 'required|numeric',
+            'data.*.forced_outage' => 'required|numeric',
+        ]);
+
+        foreach ($data['data'] as $machineData) {
+            IkhtisarHarian::create($machineData);
+        }
+
         return back()->with('success', 'Data berhasil disimpan');
     }
-} 
+}   

@@ -20,4 +20,9 @@ class Machine extends Model
     {
         return $this->belongsTo(Unit::class);
     }
+
+    public function ikhtisarHarians()
+    {
+        return $this->hasMany(IkhtisarHarian::class);
+    }
 } 
