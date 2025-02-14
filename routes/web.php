@@ -11,6 +11,7 @@ use App\Http\Controllers\DailyUnitRecordController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\UnitMachineController;
 use App\Http\Controllers\IkhtisarHarianController;
+use App\Http\Controllers\UnitMesinController;
 
 // Redirect root to login
 Route::redirect('/', '/login');
@@ -60,7 +61,7 @@ Route::middleware([
     });
 
     // Unit dan Mesin
-    Route::resource('unit-mesin', UnitMachineController::class);
+    Route::resource('unit-mesin', UnitMesinController::class);
     Route::post('unit-mesin/{unit}/machines', [UnitMachineController::class, 'storeMachine'])->name('unit-mesin.machines.store');
     Route::delete('unit-mesin/{unit}/machines/{machine}', [UnitMachineController::class, 'destroyMachine'])->name('unit-mesin.machines.destroy');
 });
