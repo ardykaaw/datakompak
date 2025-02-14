@@ -19,6 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/units/{unit}/machines', function(Unit $unit) {
+Route::get('/units/{unit}/machines', function(App\Models\Unit $unit) {
     return $unit->machines;
-}); 
+})->name('api.units.machines'); 

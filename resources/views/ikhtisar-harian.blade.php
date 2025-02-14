@@ -12,6 +12,7 @@
         selectedUnit: null,
         selectedMachine: null,
         machines: [],
+        showForm: false,
         init() {
             this.$watch('isSidebarOpen', value => localStorage.setItem('sidebarOpen', value))
             this.$watch('isDarkMode', value => {
@@ -26,13 +27,26 @@
         },
         async loadMachines() {
             if (this.selectedUnit) {
-                const response = await fetch(`/api/units/${this.selectedUnit}/machines`);
-                this.machines = await response.json();
-                this.selectedMachine = null;
+                try {
+                    const response = await fetch(`/api/units/${this.selectedUnit}/machines`);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    this.machines = await response.json();
+                    this.selectedMachine = null;
+                    this.showForm = false;
+                } catch (error) {
+                    console.error('Error loading machines:', error);
+                    this.machines = [];
+                    this.selectedMachine = null;
+                    this.showForm = false;
+                }
             } else {
                 this.machines = [];
                 this.selectedMachine = null;
+                this.showForm = false;
             }
+        },
+        watchMachine() {
+            this.showForm = this.selectedUnit && this.selectedMachine ? true : false;
         }
      }">
     
@@ -310,6 +324,7 @@
                                             <select name="machine_id" 
                                                     x-model="selectedMachine"
                                                     :disabled="!selectedUnit"
+                                                    @change="watchMachine()"
                                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                                 <option value="">Pilih Mesin</option>
                                                 <template x-for="machine in machines" :key="machine.id">
