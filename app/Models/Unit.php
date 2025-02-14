@@ -9,7 +9,10 @@ class Unit extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    protected $fillable = [
+        'name',
+        'description'
+    ];
 
     public function machines()
     {

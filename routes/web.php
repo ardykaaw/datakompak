@@ -61,7 +61,7 @@ Route::middleware([
     });
 
     // Unit dan Mesin
-    Route::resource('unit-mesin', UnitMesinController::class);
+    Route::resource('unit-mesin', UnitMachineController::class);
     Route::post('unit-mesin/{unit}/machines', [UnitMachineController::class, 'storeMachine'])->name('unit-mesin.machines.store');
     Route::delete('unit-mesin/{unit}/machines/{machine}', [UnitMachineController::class, 'destroyMachine'])->name('unit-mesin.machines.destroy');
 });
