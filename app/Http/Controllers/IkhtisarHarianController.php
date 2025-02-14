@@ -12,9 +12,9 @@ class IkhtisarHarianController extends Controller
 {
     public function index()
     {
-        $units = Unit::all();
+        $units = Unit::with('machines')->get();
         $todayData = IkhtisarHarian::with(['unit', 'machine'])
-            ->whereDate('created_at', Carbon::today())
+            ->whereDate('created_at', today())
             ->get();
         
         return view('ikhtisar-harian', compact('units', 'todayData'));
@@ -47,20 +47,23 @@ class IkhtisarHarianController extends Controller
 
     public function view(Request $request)
     {
-        $query = IkhtisarHarian::with('machine.unit')
-            ->when($request->unit, function($q) use ($request) {
-                return $q->whereHas('machine.unit', function($q) use ($request) {
-                    $q->where('id', $request->unit);
-                });
-            })
-            ->when($request->start_date, function($q) use ($request) {
-                return $q->where('created_at', '>=', $request->start_date);
-            })
-            ->when($request->end_date, function($q) use ($request) {
-                return $q->where('created_at', '<=', $request->end_date . ' 23:59:59');
+        $query = IkhtisarHarian::with(['machine.unit', 'unit']);
+        
+        if ($request->unit) {
+            $query->whereHas('machine.unit', function($q) use ($request) {
+                $q->where('id', $request->unit);
             });
+        }
+        
+        if ($request->start_date) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        
+        if ($request->end_date) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
 
-        $data = $query->paginate(15);
+        $data = $query->latest()->paginate(15);
         $units = Unit::all();
 
         return view('ikhtisar-harian-view', compact('data', 'units'));

@@ -36,9 +36,11 @@ Route::middleware([
     })->name('dashboard');
     
     // Ikhtisar Harian
-    Route::get('/ikhtisar-harian', [IkhtisarHarianController::class, 'index'])->name('ikhtisar-harian');
-    Route::post('/ikhtisar-harian/store', [IkhtisarHarianController::class, 'store'])->name('ikhtisar-harian.store');
-    Route::get('/ikhtisar-harian/view', [IkhtisarHarianController::class, 'view'])->name('ikhtisar-harian.view');
+    Route::controller(IkhtisarHarianController::class)->group(function () {
+        Route::get('/ikhtisar-harian', 'index')->name('ikhtisar-harian.index');
+        Route::post('/ikhtisar-harian', 'store')->name('ikhtisar-harian.store');
+        Route::get('/ikhtisar-harian/view', 'view')->name('ikhtisar-harian.view');
+    });
     
     // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
