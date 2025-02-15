@@ -11,6 +11,7 @@ use App\Http\Controllers\DailyUnitRecordController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\UnitMachineController;
 use App\Http\Controllers\IkhtisarHarianController;
+use App\Http\Controllers\IkhtisarHarianViewController;
 use App\Http\Controllers\UnitMesinController;
 
 // Redirect root to login
@@ -36,9 +37,18 @@ Route::middleware([
     })->name('dashboard');
     
     // Ikhtisar Harian
-    Route::get('/ikhtisar-harian', [IkhtisarHarianController::class, 'index'])->name('ikhtisar-harian');
-    Route::post('/ikhtisar-harian/store', [IkhtisarHarianController::class, 'store'])->name('ikhtisar-harian.store');
-    Route::get('/ikhtisar-harian/view', [IkhtisarHarianController::class, 'view'])->name('ikhtisar-harian.view');   
+    Route::controller(IkhtisarHarianController::class)->group(function () {
+        Route::get('/ikhtisar-harian', 'index')->name('ikhtisar-harian');
+        Route::post('/ikhtisar-harian', 'store')->name('ikhtisar-harian.store');
+        Route::get('/api/units/{unit}/machines', 'getMachines');
+    });
+    
+    Route::prefix('ikhtisar-harian')->name('ikhtisar-harian.')->group(function () {
+        Route::get('/view', [IkhtisarHarianController::class, 'view'])->name('view');
+        Route::get('/{id}/edit', [IkhtisarHarianController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [IkhtisarHarianController::class, 'update'])->name('update');
+        Route::delete('/{id}', [IkhtisarHarianController::class, 'destroy'])->name('destroy');
+    });
     
     // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
@@ -77,5 +87,11 @@ Route::middleware([
         // Route untuk machines
         Route::post('/{unit}/machines', [UnitMachineController::class, 'storeMachine'])->name('unit-mesin.machines.store');
         Route::delete('/{unit}/machines/{machine}', [UnitMachineController::class, 'destroyMachine'])->name('unit-mesin.machines.destroy');
+    });
+
+    // Ikhtisar Harian View Routes
+    Route::controller(IkhtisarHarianViewController::class)->group(function () {
+        Route::get('/ikhtisar-harian-view', 'index')->name('ikhtisar-harian.view');
+        Route::get('/ikhtisar-harian-export', 'export')->name('ikhtisar-harian.export');
     });
 });

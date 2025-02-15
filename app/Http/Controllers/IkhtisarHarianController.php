@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\IkhtisarHarian;
 use App\Models\Unit;
-use Carbon\Carbon;
+use App\Models\Machine;
+use App\Models\IkhtisarHarian;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class IkhtisarHarianController extends Controller
 {
@@ -14,58 +14,95 @@ class IkhtisarHarianController extends Controller
     {
         $units = Unit::with('machines')->get();
         $todayData = IkhtisarHarian::with(['unit', 'machine'])
-            ->whereDate('created_at', today())
+            ->whereDate('created_at', Carbon::today())
             ->get();
-        
+
         return view('ikhtisar-harian', compact('units', 'todayData'));
+    }
+
+    public function view()
+    {
+        $units = Unit::all();
+        $data = IkhtisarHarian::with(['unit', 'machine'])
+            ->when(request('unit'), function($query) {
+                return $query->where('unit_id', request('unit'));
+            })
+            ->when(request('start_date') && request('end_date'), function($query) {
+                return $query->whereBetween('created_at', [
+                    Carbon::parse(request('start_date')),
+                    Carbon::parse(request('end_date'))->endOfDay()
+                ]);
+            })
+            ->latest()
+            ->paginate(15);
+
+        return view('ikhtisar-harian-view', compact('data', 'units'));
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'data.*.unit_id' => 'required|exists:units,id',
-            'data.*.machine_id' => 'required|exists:machines,id',
+        $request->validate([
             'data.*.installed_power' => 'required|numeric',
             'data.*.dmn_power' => 'required|numeric',
             'data.*.capable_power' => 'required|numeric',
-            'data.*.peak_load' => 'required|numeric',
-            'data.*.off_peak_load' => 'required|numeric',
+            'data.*.peak_load_day' => 'required|numeric',
+            'data.*.peak_load_night' => 'required|numeric',
             'data.*.gross_production' => 'required|numeric',
             'data.*.net_production' => 'required|numeric',
-            'data.*.operating_hours' => 'required|numeric',
-            'data.*.planned_outage' => 'required|numeric',
-            'data.*.maintenance_outage' => 'required|numeric',
-            'data.*.forced_outage' => 'required|numeric',
+            'data.*.operating_hours' => 'required|numeric'
         ]);
 
-        foreach ($data['data'] as $machineData) {
-            IkhtisarHarian::create($machineData);
+        foreach ($request->data as $machineId => $data) {
+            IkhtisarHarian::create([
+                'machine_id' => $machineId,
+                'unit_id' => Machine::find($machineId)->unit_id,
+                ...$data
+            ]);
         }
 
-        return back()->with('success', 'Data berhasil disimpan');
+        return redirect()->route('ikhtisar-harian.index')
+            ->with('success', 'Data berhasil disimpan!');
     }
 
-    public function view(Request $request)
+    public function getMachines(Unit $unit)
     {
-        $query = IkhtisarHarian::with(['machine.unit', 'unit']);
-        
-        if ($request->unit) {
-            $query->whereHas('machine.unit', function($q) use ($request) {
-                $q->where('id', $request->unit);
-            });
-        }
-        
-        if ($request->start_date) {
-            $query->whereDate('created_at', '>=', $request->start_date);
-        }
-        
-        if ($request->end_date) {
-            $query->whereDate('created_at', '<=', $request->end_date);
-        }
+        return response()->json($unit->machines);
+    }
 
-        $data = $query->latest()->paginate(15);
+    public function edit($id)
+    {
+        $data = IkhtisarHarian::with(['unit', 'machine'])->findOrFail($id);
         $units = Unit::all();
+        return view('ikhtisar-harian.edit', compact('data', 'units'));
+    }
 
-        return view('ikhtisar-harian-view', compact('data', 'units'));
+    public function update(Request $request, $id)
+    {
+        $ikhtisarHarian = IkhtisarHarian::findOrFail($id);
+        
+        $request->validate([
+            'installed_power' => 'required|numeric',
+            'dmn_power' => 'required|numeric',
+            'capable_power' => 'required|numeric',
+            'peak_load_day' => 'required|numeric',
+            'peak_load_night' => 'required|numeric',
+            'gross_production' => 'required|numeric',
+            'net_production' => 'required|numeric',
+            'operating_hours' => 'required|numeric'
+        ]);
+
+        $ikhtisarHarian->update($request->all());
+
+        return redirect()->route('ikhtisar-harian.view')
+            ->with('success', 'Data berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $ikhtisarHarian = IkhtisarHarian::findOrFail($id);
+        $ikhtisarHarian->delete();
+
+        return redirect()->route('ikhtisar-harian.view')
+            ->with('success', 'Data berhasil dihapus!');
     }
 }   
