@@ -43,7 +43,7 @@
             <span x-show="isSidebarOpen" 
                   x-transition:enter="transition-opacity ease-out duration-300"
                   x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Dashboard</span>
+                  x-transition:enter-end="opacityzz-100">Dashboard</span>
         </a>
 
         <a href="{{ route('ikhtisar-harian') }}" 
