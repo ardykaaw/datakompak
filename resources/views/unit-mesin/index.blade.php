@@ -3,6 +3,13 @@
 @section('title', 'Unit dan Mesin')
 
 @section('content')
+@php
+    $totalMachines = 0;
+    foreach($units as $unit) {
+        $totalMachines += $unit->machines->count();
+    }
+@endphp
+
 <div class="min-h-screen bg-gray-100"
      x-data="{ 
         isSidebarOpen: localStorage.getItem('sidebarOpen') !== 'false',
@@ -45,108 +52,166 @@
         <main class="p-4">
             <div class="max-w-7xl mx-auto">
                 <!-- Overview Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <!-- Mesin Card -->
-                    <a href="{{ route('unit-mesin.mesin') }}" class="block">
-                        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6 text-white">
-                            <div class="flex items-center justify-between mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Total Mesin Card -->
+                    <div class="bg-blue-600 rounded-lg shadow-lg overflow-hidden">
+                        <div class="px-6 py-5">
+                            <div class="flex items-center justify-between">
                                 <div>
-                                    <h2 class="text-xl font-semibold">Total Mesin</h2>
-                                    <p class="text-sm opacity-75">Kelola data mesin</p>
+                                    <p class="text-sm font-medium text-white">Total Mesin</p>
+                                    <h3 class="text-4xl font-bold text-white mt-2">{{ $totalMachines }}</h3>
                                 </div>
-                                <div class="text-3xl">
-                                    <i class="fas fa-cogs"></i>
+                                <div class="w-14 h-14 flex items-center justify-center rounded-lg bg-blue-500">
+                                    <i class="fas fa-cogs text-2xl text-white"></i>
                                 </div>
                             </div>
-                            <div class="text-2xl font-bold mb-2">
-                                @php
-                                    $totalMachines = 0;
-                                    foreach($units as $unit) {
-                                        $totalMachines += $unit->machines->count();
-                                    }
-                                @endphp
-                                {{ $totalMachines }}
+                            <div class="mt-4 border-t border-blue-500 pt-4">
+                                <a href="{{ route('unit-mesin.mesin') }}" 
+                                   class="text-sm text-white hover:text-blue-100 inline-flex items-center transition-colors duration-200">
+                                    <span>Kelola data mesin</span>
+                                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                                </a>
                             </div>
-                            <div class="text-sm opacity-75">Lihat semua mesin →</div>
                         </div>
-                    </a>
+                    </div>
 
                     <!-- Unit Card -->
-                    <a href="{{ route('unit-mesin.unit') }}" class="block">
-                        <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-6 text-white">
-                            <div class="flex items-center justify-between mb-4">
+                    <div class="bg-red-600 rounded-lg shadow-lg overflow-hidden">
+                        <div class="px-6 py-5">
+                            <div class="flex items-center justify-between">
                                 <div>
-                                    <h2 class="text-xl font-semibold">Unit</h2>
-                                    <p class="text-sm opacity-75">Kelola data unit</p>
+                                    <p class="text-sm font-medium text-white">Total Unit</p>
+                                    <h3 class="text-4xl font-bold text-white mt-2">{{ $units->count() }}</h3>
                                 </div>
-                                <div class="text-3xl">
-                                    <i class="fas fa-industry"></i>
+                                <div class="w-14 h-14 flex items-center justify-center rounded-lg bg-red-500">
+                                    <i class="fas fa-industry text-2xl text-white"></i>
                                 </div>
                             </div>
-                            <div class="text-2xl font-bold mb-2">
-                                {{ $units->count() }}
+                            <div class="mt-4 border-t border-red-500 pt-4">
+                                <a href="{{ route('unit-mesin.unit') }}" 
+                                   class="text-sm text-white hover:text-red-100 inline-flex items-center transition-colors duration-200">
+                                    <span>Kelola data unit</span>
+                                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                                </a>
                             </div>
-                            <div class="text-sm opacity-75">Lihat semua unit →</div>
                         </div>
-                    </a>
+                    </div>
 
-                    <!-- Overview Card -->
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm p-6 text-white">
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <h2 class="text-xl font-semibold">Ringkasan</h2>
-                                <p class="text-sm opacity-75">Statistik umum</p>
+                    <!-- Ringkasan Card -->
+                    <div class="bg-green-600 rounded-lg shadow-lg overflow-hidden">
+                        <div class="px-6 py-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <p class="text-sm font-medium text-white">Statistik</p>
+                                <div class="w-14 h-14 flex items-center justify-center rounded-lg bg-green-500">
+                                    <i class="fas fa-chart-pie text-2xl text-white"></i>
+                                </div>
                             </div>
-                            <div class="text-3xl">
-                                <i class="fas fa-chart-pie"></i>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b border-green-500 pb-3">
+                                    <p class="text-sm text-white">Rata-rata Mesin/Unit</p>
+                                    <span class="text-sm font-bold text-white">
+                                        {{ $units->count() > 0 ? number_format($totalMachines / $units->count(), 1) : '0' }}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2">
+                                    <p class="text-sm text-white">Total Kapasitas</p>
+                                    <span class="text-sm font-bold text-white">
+                                        {{ number_format($units->sum(function($unit) { 
+                                            return $unit->machines->sum('capacity');
+                                        }), 0) }} MW
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="space-y-2">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm opacity-75">Rata-rata Mesin per Unit:</span>
-                                <span class="font-semibold">
-                                    {{ $units->count() > 0 ? number_format($totalMachines / $units->count(), 1) : '0' }}
-                                </span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm opacity-75">Unit Aktif:</span>
-                                <span class="font-semibold">{{ $units->count() }}</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm opacity-75">Total Mesin:</span>
-                                <span class="font-semibold">{{ $totalMachines }}</span>
+                            <div class="mt-4 border-t border-green-500 pt-4">
+                                <a href="{{ route('analytics') }}" 
+                                   class="text-sm text-white hover:text-green-100 inline-flex items-center transition-colors duration-200">
+                                    <span>Lihat analisis lengkap</span>
+                                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Recent Activity -->
-                <div class="bg-white rounded-xl shadow-sm">
-                    <div class="p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <h2 class="text-xl font-semibold text-gray-800">Aktivitas Terbaru</h2>
-                                <p class="text-sm text-gray-500">Daftar unit dan mesin terbaru</p>
-                            </div>
-                        </div>
-                        
-                        <div class="divide-y divide-gray-200">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
+                    <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-white">
+                            <i class="fas fa-history mr-2 text-gray-600 dark:text-gray-400"></i>
+                            Aktivitas Terbaru
+                        </h3>
+                        <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-1 gap-4">
                             @foreach($units->take(5) as $unit)
-                                <div class="py-3">
-                                    <div class="flex justify-between items-center">
-                                        <div>
-                                            <h3 class="text-base font-medium text-gray-800">
-                                                <a href="{{ route('unit-mesin.show', $unit) }}" class="hover:text-blue-500">
-                                                    {{ $unit->name }}
-                                                </a>
-                                            </h3>
-                                            <p class="text-sm text-gray-500">
-                                                Jumlah Mesin: {{ $unit->machines->count() }}
-                                            </p>
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg shadow p-4">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <!-- Header with Unit Name -->
+                                            <div class="flex items-center space-x-3 mb-4">
+                                                <div class="flex-shrink-0 p-2 rounded-full bg-blue-100 dark:bg-blue-900">
+                                                    <i class="fas fa-industry text-blue-600 dark:text-blue-400"></i>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-lg font-medium text-gray-800 dark:text-white">
+                                                        <a href="{{ route('unit-mesin.show', $unit) }}" 
+                                                           class="hover:text-blue-500 dark:hover:text-blue-400">
+                                                            {{ $unit->name }}
+                                                        </a>
+                                                    </h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">Unit Pembangkit</p>
+                                                </div>
+                                            </div>
+
+                                            <!-- Statistics Grid -->
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                <!-- Total Mesin -->
+                                                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400">Total Mesin</p>
+                                                    <p class="text-lg font-semibold text-gray-800 dark:text-white">
+                                                        {{ $unit->machines->count() }}
+                                                    </p>
+                                                </div>
+
+                                                <!-- Status -->
+                                                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400">Status</p>
+                                                    <p class="text-lg font-semibold text-green-500">
+                                                        Aktif
+                                                    </p>
+                                                </div>
+
+                                                <!-- Kapasitas -->
+                                                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400">Kapasitas</p>
+                                                    <p class="text-lg font-semibold text-gray-800 dark:text-white">
+                                                        {{ number_format($unit->machines->sum('capacity'), 0) }} MW
+                                                    </p>
+                                                </div>
+
+                                                <!-- Utilisasi -->
+                                                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400">Utilisasi</p>
+                                                    <p class="text-lg font-semibold text-gray-800 dark:text-white">
+                                                        {{ number_format($unit->machines->avg('utilization'), 1) }}%
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="flex space-x-2">
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex space-x-2 ml-4">
+                                            <a href="{{ route('unit-mesin.show', $unit) }}" 
+                                               class="p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200"
+                                               title="Lihat Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                             <a href="{{ route('unit-mesin.edit', $unit) }}" 
-                                               class="text-gray-400 hover:text-blue-500">
+                                               class="p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200"
+                                               title="Edit Unit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </div>
@@ -155,17 +220,22 @@
                             @endforeach
 
                             @if($units->isEmpty())
-                                <div class="py-3 text-center text-gray-500">
-                                    Belum ada data unit dan mesin.
+                                <div class="text-center py-8">
+                                    <div class="text-gray-400 dark:text-gray-500">
+                                        <i class="fas fa-inbox text-4xl mb-4"></i>
+                                        <p class="text-lg">Belum ada data unit dan mesin.</p>
+                                        <p class="text-sm mt-2">Tambahkan unit baru untuk memulai.</p>
+                                    </div>
                                 </div>
                             @endif
                         </div>
 
                         @if($units->count() > 5)
-                            <div class="mt-4 text-center">
+                            <div class="mt-6 text-center">
                                 <a href="{{ route('unit-mesin.unit') }}" 
-                                   class="text-blue-500 hover:text-blue-600 text-sm">
-                                    Lihat semua unit →
+                                   class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                                    <span>Lihat Semua Unit</span>
+                                    <i class="fas fa-arrow-right ml-2"></i>
                                 </a>
                             </div>
                         @endif

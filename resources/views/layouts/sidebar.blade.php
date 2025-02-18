@@ -11,124 +11,142 @@
 </div>
 
 <!-- Sidebar -->
-<aside class="fixed inset-y-0 left-0 z-30 flex flex-col w-64 transform transition-all duration-300 ease-in-out bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+<aside class="fixed inset-y-0 left-0 z-30 transform transition-all duration-300 h-screen bg-transparent shadow-md text-white p-3"
        :class="{
-           'translate-x-0 w-64': isSidebarOpen,
-           '-translate-x-full lg:translate-x-0 lg:w-20': !isSidebarOpen
+           'w-[280px]': isSidebarOpen,
+           'w-[80px]': !isSidebarOpen
        }">
-    <!-- Logo Section -->
-    <div class="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-700">
-        <div class="flex items-center w-full"
-             :class="{ 'justify-center': !isSidebarOpen }">
-            <img src="{{ url('images/logo-pln.png') }}" alt="PLN Logo" 
-                 class="transition-all duration-300 ease-in-out object-contain"
-                 :class="{ 'h-10': isSidebarOpen, 'h-8 w-8': !isSidebarOpen }">
-            <div x-show="isSidebarOpen"
-                 x-transition:enter="transition-opacity ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100"
-                 class="ml-3">
-                <h2 class="text-base font-semibold text-gray-900 dark:text-white">PLN Power</h2>
-                <p class="text-xs text-gray-600 dark:text-gray-400">Operations</p>
-            </div>
+    <!-- Container untuk background dengan padding -->
+    <div class="bg-[#0A749B] dark:bg-gray-800 rounded-2xl h-full px-4 py-6 flex flex-col">
+        <!-- Logo section -->
+        <div class="flex items-center justify-between mb-8">
+            <img src="{{ url('images/navlogo.png') }}" alt="PLN Logo" 
+                 :class="{ 'w-40': isSidebarOpen, 'w-10': !isSidebarOpen }">
         </div>
-    </div>
 
-    <!-- Navigation -->
-    <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-        <a href="{{ route('dashboard') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('dashboard') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
-           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-tachometer-alt text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
-            <span x-show="isSidebarOpen" 
-                  x-transition:enter="transition-opacity ease-out duration-300"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacityzz-100">Dashboard</span>
-        </a>
+        <!-- Navigation -->
+        <nav class="space-y-2 flex-grow">
+            <a href="{{ route('dashboard') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('dashboard') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('dashboard') }}
+               }">
+                <i class="fas fa-tachometer-alt w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Dashboard</span>
+            </a>
 
-        <a href="{{ route('ikhtisar-harian') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('ikhtisar-harian') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
-           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-clipboard-list text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
-            <span x-show="isSidebarOpen"
-                  x-transition:enter="transition-opacity ease-out duration-300"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Ikhtisar Harian</span>
-        </a>
-        <a href="{{ route('kinerja-pembangkit.index') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('kinerja-pembangkit.*') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
-           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-chart-line text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
-            <span x-show="isSidebarOpen"
-                  x-transition:enter="transition-opacity ease-out duration-300"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Kinerja Pembangkit</span>
-        </a>
+            <a href="{{ route('ikhtisar-harian') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('ikhtisar-harian') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('ikhtisar-harian') }}
+               }">
+                <i class="fas fa-clipboard-list w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Ikhtisar Harian</span>
+            </a>
 
-        <a href="{{ route('analytics') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('analytics') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
-           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-chart-bar text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
-            <span x-show="isSidebarOpen"
-                  x-transition:enter="transition-opacity ease-out duration-300"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Analytics</span>
-        </a>
+            <a href="{{ route('kinerja-pembangkit.index') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('kinerja-pembangkit.*') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('kinerja-pembangkit.*') }}
+               }">
+                <i class="fas fa-chart-line w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Kinerja Pembangkit</span>
+            </a>
 
-        <a href="{{ route('reports') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('reports') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
-           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-file-alt text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
-            <span x-show="isSidebarOpen"
-                  x-transition:enter="transition-opacity ease-out duration-300"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Reports</span>
-        </a>
-        <a href="{{ route('unit-mesin.index') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('unit-mesin.*') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
-           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-industry text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
-            <span x-show="isSidebarOpen"
-                  x-transition:enter="transition-opacity ease-out duration-300"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Unit dan Mesin</span>
-        </a>
+            <a href="{{ route('analytics') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('analytics') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('analytics') }}
+               }">
+                <i class="fas fa-chart-bar w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Analytics</span>
+            </a>
 
-        @if(auth()->user()->isSuperAdmin())
-        <a href="{{ route('user-management.index') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('user-management.*') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
-           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-users text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
-            <span x-show="isSidebarOpen"
-                  x-transition:enter="transition-opacity ease-out duration-300"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Manajemen Pengguna</span>
-        </a>
-        @endif
-        <a href="{{ route('settings') }}" 
-           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('settings') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
-           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-cog text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
-            <span x-show="isSidebarOpen"
-                  x-transition:enter="transition-opacity ease-out duration-300"
-                  x-transition:enter-start="opacity-0"
-                  x-transition:enter-end="opacity-100">Settings</span>
-        </a>
+            <a href="{{ route('reports') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('reports') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('reports') }}
+               }">
+                <i class="fas fa-file-alt w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Reports</span>
+            </a>
 
-        <!-- Kinerja Pembangkit -->
-       
-    </nav>
+            <a href="{{ route('unit-mesin.index') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('unit-mesin.*') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('unit-mesin.*') }}
+               }">
+                <i class="fas fa-industry w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Unit dan Mesin</span>
+            </a>
 
-    <!-- User Section -->
-    <div class="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700">
-        <div class="flex items-center" :class="{ 'justify-between': isSidebarOpen, 'justify-center': !isSidebarOpen }">
-            <div class="flex items-center" x-show="isSidebarOpen"
-                 x-transition:enter="transition-opacity ease-out duration-300"
-                 x-transition:enter-start="opacity-0"
-                 x-transition:enter-end="opacity-100">
-                <i class="fas fa-user-circle text-xl text-gray-400"></i>
+            @if(auth()->user()->isSuperAdmin())
+            <a href="{{ route('user-management.index') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('user-management.*') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('user-management.*') }}
+               }">
+                <i class="fas fa-users w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Manajemen Pengguna</span>
+            </a>
+            @endif
+
+            <a href="{{ route('settings') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('settings') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('settings') }}
+               }">
+                <i class="fas fa-cog w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Settings</span>
+            </a>
+        </nav>
+
+        <!-- Bottom Section: User & Logout -->
+        <div class="mt-2">
+            <!-- Dark mode toggle -->
+            <button @click="isDarkMode = !isDarkMode"
+                    class="flex items-center w-full px-3 py-2.5 rounded-lg transition-colors duration-200"
+                    :class="{ 
+                        'justify-start': isSidebarOpen, 
+                        'justify-center': !isSidebarOpen,
+                        'bg-white/10 hover:bg-white/20 dark:bg-gray-700 dark:hover:bg-gray-600': true
+                    }">
+                <i class="fas fa-moon w-6 h-6 text-white dark:text-gray-200" x-show="!isDarkMode"></i>
+                <i class="fas fa-sun w-6 h-6 text-white dark:text-gray-200" x-show="isDarkMode"></i>
+                <span class="ml-3 text-base text-white dark:text-gray-200" x-show="isSidebarOpen">
+                    <span x-show="!isDarkMode">Dark Mode</span>
+                    <span x-show="isDarkMode">Light Mode</span>
+                </span>
+            </button>
+
+            <div class="flex items-center px-3 py-2.5 mb-2" x-show="isSidebarOpen">
+                <i class="fas fa-user-circle text-xl text-white/70 dark:text-gray-400"></i>
                 <div class="ml-3">
-                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <p class="text-sm font-medium text-white dark:text-gray-200">
                         @if(auth()->user()->isSuperAdmin())
                             Super Admin
                         @elseif(auth()->user()->isAdmin())
@@ -137,20 +155,21 @@
                             {{ auth()->user()->name }}
                         @endif
                     </p>
-                    <a href="{{ route('logout') }}" 
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();" 
-                       class="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">Sign Out</a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-                        @csrf
-                    </form>
                 </div>
             </div>
-            
-            <!-- Dark mode toggle -->
-            <button @click="isDarkMode = !isDarkMode"
-                    class="p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
-                <i class="text-lg text-gray-600 dark:text-gray-300"
-                   :class="{ 'fas fa-moon': !isDarkMode, 'fas fa-sun': isDarkMode }"></i>
+
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+            <button onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                    class="flex items-center w-full px-3 py-2.5 rounded-lg transition-colors duration-200"
+                    :class="{ 
+                        'justify-start': isSidebarOpen, 
+                        'justify-center': !isSidebarOpen,
+                        'text-white bg-red-400 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600': true
+                    }">
+                <i class="fas fa-sign-out-alt w-6 h-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Logout</span>
             </button>
         </div>
     </div>
