@@ -39,7 +39,7 @@
         <a href="{{ route('dashboard') }}" 
            class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('dashboard') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
            :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
-            <i class="fas fa-chart-line text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
+            <i class="fas fa-tachometer-alt text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
             <span x-show="isSidebarOpen" 
                   x-transition:enter="transition-opacity ease-out duration-300"
                   x-transition:enter-start="opacity-0"
@@ -54,6 +54,15 @@
                   x-transition:enter="transition-opacity ease-out duration-300"
                   x-transition:enter-start="opacity-0"
                   x-transition:enter-end="opacity-100">Ikhtisar Harian</span>
+        </a>
+        <a href="{{ route('kinerja-pembangkit.index') }}" 
+           class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('kinerja-pembangkit.*') ? 'bg-primary-50 text-primary-600 dark:bg-primary-900/50 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700' }}"
+           :class="{ 'justify-center': !isSidebarOpen, 'justify-start': isSidebarOpen }">
+            <i class="fas fa-chart-line text-lg" :class="{ 'mr-3': isSidebarOpen }"></i>
+            <span x-show="isSidebarOpen"
+                  x-transition:enter="transition-opacity ease-out duration-300"
+                  x-transition:enter-start="opacity-0"
+                  x-transition:enter-end="opacity-100">Kinerja Pembangkit</span>
         </a>
 
         <a href="{{ route('analytics') }}" 
@@ -106,7 +115,8 @@
                   x-transition:enter-end="opacity-100">Settings</span>
         </a>
 
-        
+        <!-- Kinerja Pembangkit -->
+       
     </nav>
 
     <!-- User Section -->
