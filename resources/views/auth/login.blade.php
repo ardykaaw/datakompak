@@ -7,10 +7,10 @@
     <div class="absolute inset-0 bg-gradient-to-br from-blue-900/80 to-black/80"></div>
     <div class="max-w-lg w-full space-y-6 bg-white/95 backdrop-blur-md p-10 rounded-2xl shadow-2xl relative">
         <div class="space-y-3">
-            <div class="flex justify-center -mt-6">
-                <img src="{{ url('images/logo-pln.png') }}" alt="PLN Logo" class="h-40 w-auto">
+            <div class="flex justify-center -mt-8">
+                <img src="{{ url('images/logo-pln.png') }}" alt="PLN Logo" class="h-48 w-auto">
             </div>
-            <h2 class="text-center text-3xl font-bold text-blue-900">
+            <h2 class="text-center text-3xl font-bold text-blue-900 -mt-2">
                 PLN Nusantara Power
             </h2>
             <p class="text-center text-base text-gray-600 font-medium border-t border-gray-200 pt-3">
