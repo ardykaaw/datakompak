@@ -95,11 +95,18 @@
                                 <h2 class="text-xl font-semibold text-gray-800">Daftar Unit</h2>
                                 <p class="text-sm text-gray-500">Kelola data unit pembangkit</p>
                             </div>
-                            <a href="{{ route('unit-mesin.create') }}" 
-                               class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center">
-                                <i class="fas fa-plus mr-2"></i>
-                                Tambah Unit
-                            </a>
+                            <div class="flex space-x-3">
+                                <a href="{{ route('unit-mesin.index') }}" 
+                                   class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Lihat Status Unit dan Mesin
+                                </a>
+                                <a href="{{ route('unit-mesin.create') }}" 
+                                   class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Tambah Unit
+                                </a>
+                            </div>
                         </div>
 
                         <!-- Table -->
@@ -141,14 +148,16 @@
                                                        class="text-blue-600 hover:text-blue-900">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <form action="{{ route('unit-mesin.destroy', $unit) }}" method="POST" class="inline">
+                                                    <button onclick="confirmDelete({{ $unit->id }}, '{{ $unit->name }}')" 
+                                                            class="text-red-600 hover:text-red-900">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                    <form id="delete-form-{{ $unit->id }}" 
+                                                          action="{{ route('unit-mesin.destroy', $unit) }}" 
+                                                          method="POST" 
+                                                          class="hidden">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" 
-                                                                class="text-red-600 hover:text-red-900"
-                                                                onclick="return confirm('Apakah Anda yakin ingin menghapus unit ini?')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
                                                     </form>
                                                 </div>
                                             </td>
@@ -173,4 +182,24 @@
         </main>
     </div>
 </div>
+
+<script>
+function confirmDelete(unitId, unitName) {
+    Swal.fire({
+        title: 'Konfirmasi Hapus',
+        html: `Apakah Anda yakin ingin menghapus unit <strong>${unitName}</strong>?<br>Tindakan ini tidak dapat dibatalkan.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(`delete-form-${unitId}`).submit();
+        }
+    });
+}
+</script>
 @endsection
