@@ -367,7 +367,7 @@
                      x-transition:enter-start="opacity-0"
                      x-transition:enter-end="opacity-100">
                     
-                    <form method="POST" action="{{ route('ikhtisar-harian.store') }}">
+                    <form method="POST" action="{{ route('ikhtisar-harian.store') }}" id="ikhtisarForm">
                         @csrf
                         
                         <!-- Submit Button at Top -->
@@ -543,7 +543,8 @@
                                                         <div class="grid grid-cols-3 gap-0">
                                                             <div class="input-group">
                                                                 <input type="number" step="0.001" name="data[{{ $machine->id }}][installed_power]" 
-                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center">
+                                                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm text-center"
+                                                                       required>
                                                             </div>
                                                             <div class="input-group">
                                                                 <input type="number" step="0.001" name="data[{{ $machine->id }}][dmn_power]"
@@ -907,5 +908,43 @@
             }
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto calculate total fuel
+        function calculateTotalFuel(machineId) {
+            const hsd = parseFloat(document.querySelector(`[name="data[${machineId}][hsd_fuel]"]`).value) || 0;
+            const b35 = parseFloat(document.querySelector(`[name="data[${machineId}][b35_fuel]"]`).value) || 0;
+            const mfo = parseFloat(document.querySelector(`[name="data[${machineId}][mfo_fuel]"]`).value) || 0;
+            
+            document.querySelector(`[name="data[${machineId}][total_fuel]"]`).value = (hsd + b35 + mfo).toFixed(2);
+        }
+
+        // Auto calculate total oil
+        function calculateTotalOil(machineId) {
+            const oils = ['meditran_oil', 'salyx_420', 'salyx_430', 'travolube_a', 'turbolube_46', 'turbolube_68'];
+            let total = 0;
+            
+            oils.forEach(oil => {
+                total += parseFloat(document.querySelector(`[name="data[${machineId}][${oil}]"]`).value) || 0;
+            });
+            
+            document.querySelector(`[name="data[${machineId}][total_oil]"]`).value = total.toFixed(2);
+        }
+
+        // Add event listeners to fuel and oil inputs
+        document.querySelectorAll('[name*="fuel"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const machineId = e.target.name.match(/\[(\d+)\]/)[1];
+                calculateTotalFuel(machineId);
+            });
+        });
+
+        document.querySelectorAll('[name*="oil"]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const machineId = e.target.name.match(/\[(\d+)\]/)[1];
+                calculateTotalOil(machineId);
+            });
+        });
+    });
 </script>
 @endsection 

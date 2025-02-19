@@ -11,13 +11,16 @@ class IkhtisarHarian extends Model
 
     protected $table = 'data'; // Jika nama tabel tetap 'data'
 
+    public $timestamps = true;
+
     protected $fillable = [
         'unit_id',
         'machine_id',
         'installed_power',
         'dmn_power',
         'capable_power',
-        'peak_load',
+        'peak_load_day',
+        'peak_load_night',
         'off_peak_load',
         'gross_production',
         'net_production',
@@ -30,11 +33,10 @@ class IkhtisarHarian extends Model
         'transformer_losses',
         'usage_percentage',
         'period_hours',
-        'peak_load_day',
-        'peak_load_night',
         'kit_ratio',
         'trip_machine',
         'trip_electrical',
+        'trip_non_omc',
         'efdh',
         'epdh',
         'eudh',
@@ -44,7 +46,6 @@ class IkhtisarHarian extends Model
         'efor',            // Kinerja Pembangkit - EFOR
         'sdof',            // Kinerja Pembangkit - SdOF
         'ncf',             // Capability Factor - NCF
-        'trip_non_omc',
         'nof',              // Nett Operating Factor
         'jsi',              // JSI
         'hsd_fuel',         // HSD Fuel Usage

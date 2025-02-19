@@ -42,26 +42,76 @@ class IkhtisarHarianController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'data.*.unit_id' => 'required|exists:units,id',
+            'data.*.machine_id' => 'required|exists:machines,id',
             'data.*.installed_power' => 'required|numeric',
             'data.*.dmn_power' => 'required|numeric',
             'data.*.capable_power' => 'required|numeric',
             'data.*.peak_load_day' => 'required|numeric',
             'data.*.peak_load_night' => 'required|numeric',
+            'data.*.kit_ratio' => 'required|numeric',
             'data.*.gross_production' => 'required|numeric',
             'data.*.net_production' => 'required|numeric',
-            'data.*.operating_hours' => 'required|numeric'
+            'data.*.aux_power' => 'required|numeric',
+            'data.*.transformer_losses' => 'required|numeric',
+            'data.*.usage_percentage' => 'required|numeric',
+            'data.*.period_hours' => 'required|numeric',
+            'data.*.operating_hours' => 'required|numeric',
+            'data.*.standby_hours' => 'required|numeric',
+            'data.*.planned_outage' => 'required|numeric',
+            'data.*.maintenance_outage' => 'required|numeric',
+            'data.*.forced_outage' => 'required|numeric',
+            'data.*.trip_machine' => 'required|numeric',
+            'data.*.trip_electrical' => 'required|numeric',
+            'data.*.efdh' => 'required|numeric',
+            'data.*.epdh' => 'required|numeric',
+            'data.*.eudh' => 'required|numeric',
+            'data.*.esdh' => 'required|numeric',
+            'data.*.eaf' => 'required|numeric',
+            'data.*.sof' => 'required|numeric',
+            'data.*.efor' => 'required|numeric',
+            'data.*.sdof' => 'required|numeric',
+            'data.*.ncf' => 'required|numeric',
+            'data.*.nof' => 'required|numeric',
+            'data.*.jsi' => 'required|numeric',
+            'data.*.hsd_fuel' => 'required|numeric',
+            'data.*.b35_fuel' => 'required|numeric',
+            'data.*.mfo_fuel' => 'required|numeric',
+            'data.*.total_fuel' => 'required|numeric',
+            'data.*.water_usage' => 'required|numeric',
+            'data.*.meditran_oil' => 'required|numeric',
+            'data.*.salyx_420' => 'required|numeric',
+            'data.*.salyx_430' => 'required|numeric',
+            'data.*.travolube_a' => 'required|numeric',
+            'data.*.turbolube_46' => 'required|numeric',
+            'data.*.turbolube_68' => 'required|numeric',
+            'data.*.total_oil' => 'required|numeric',
+            'data.*.sfc_scc' => 'required|numeric',
+            'data.*.nphr' => 'required|numeric',
+            'data.*.slc' => 'required|numeric',
+            'data.*.notes' => 'nullable|string|max:255',
+            'data.*.off_peak_load' => 'required|numeric',
+            'data.*.trip_non_omc' => 'required|numeric',
         ]);
 
-        foreach ($request->data as $machineId => $data) {
-            IkhtisarHarian::create([
-                'machine_id' => $machineId,
-                'unit_id' => Machine::find($machineId)->unit_id,
-                ...$data
-            ]);
-        }
+        try {
+            foreach ($request->data as $machineId => $data) {
+                $machine = Machine::findOrFail($machineId);
+                
+                IkhtisarHarian::create([
+                    'machine_id' => $machineId,
+                    'unit_id' => $machine->unit_id,
+                    ...$data
+                ]);
+            }
 
-        return redirect()->route('ikhtisar-harian.index')
-            ->with('success', 'Data berhasil disimpan!');
+            return redirect()->route('ikhtisar-harian.index')
+                ->with('success', 'Data berhasil disimpan!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function getMachines(Unit $unit)
