@@ -8,7 +8,7 @@
     <div class="max-w-lg w-full space-y-6 bg-white/95 backdrop-blur-md p-10 rounded-2xl shadow-2xl relative">
         <div class="space-y-3">
             <div class="flex justify-center -mt-8">
-                <img src="{{ url('images/logo-pln.png') }}" alt="PLN Logo" class="h-48 w-auto">
+                <img src="{{ url('images/logo-pln.png') }}" alt="PLN Logo" class="h-36 w-auto">
             </div>
             <h2 class="text-center text-3xl font-bold text-blue-900 -mt-2">
                 PLN Nusantara Power
