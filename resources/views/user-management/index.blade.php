@@ -7,6 +7,7 @@
      x-data="{ 
         isSidebarOpen: localStorage.getItem('sidebarOpen') !== 'false',
         isDarkMode: localStorage.getItem('darkMode') === 'true',
+        showCreateModal: false,
         init() {
             this.$watch('isSidebarOpen', value => localStorage.setItem('sidebarOpen', value))
             this.$watch('isDarkMode', value => {
@@ -114,95 +115,122 @@
                 </div>
 
                 <!-- Users Table -->
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">Daftar Pengguna</h3>
-                        <div class="relative">
-                            <input type="text" 
-                                   placeholder="Cari pengguna..." 
-                                   class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <div class="absolute left-3 top-2.5">
-                                <i class="fas fa-search text-gray-400"></i>
+                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                        <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                            <div class="flex items-center">
+                                <i class="fas fa-users text-blue-500 text-xl mr-3"></i>
+                                <h3 class="text-lg font-semibold text-gray-900">Daftar Pengguna</h3>
+                            </div>
+                            <div class="relative w-full md:w-64">
+                                <input type="text" 
+                                       placeholder="Cari pengguna..." 
+                                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm">
+                                <div class="absolute left-3 top-2.5">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-200">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($users as $user)
-                                    <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-10 w-10">
-                                                    <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                        <i class="fas fa-user text-gray-400"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="ml-4">
-                                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm text-gray-900">{{ $user->email }}</div>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                {{ $user->role === 'super_admin' ? 'bg-purple-100 text-purple-800' : 
-                                                   ($user->role === 'admin' ? 'bg-blue-100 text-blue-800' : 
-                                                   'bg-green-100 text-green-800') }}">
-                                                {{ ucfirst($user->role) }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $user->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                {{ $user->is_active ? 'Aktif' : 'Tidak Aktif' }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            @can('manage-users')
-                                            <div class="flex space-x-3">
-                                                <a href="{{ route('user-management.edit', $user->id) }}" 
-                                                   class="text-blue-600 hover:text-blue-900">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                @if($user->id !== auth()->id())
-                                                <button onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')" 
-                                                        class="text-red-600 hover:text-red-900">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                                <form id="delete-form-{{ $user->id }}" 
-                                                      action="{{ route('user-management.destroy', $user->id) }}" 
-                                                      method="POST" 
-                                                      class="hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                </form>
-                                                @endif
-                                            </div>
-                                            @endcan
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Pagination -->
-                <div class="mt-4">
-                    {{ $users->links() }}
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-200">
+                            <thead>
+                                <tr class="bg-gradient-to-r from-gray-50 to-gray-100">
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-r border-gray-200">Nama</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-r border-gray-200">Email</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-r border-gray-200">Unit</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-r border-gray-200">Role</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-r border-gray-200">Status</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider border-b border-gray-200">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($users as $user)
+                                <tr class="hover:bg-blue-50/30 transition-colors duration-200">
+                                    <td class="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center shadow-sm">
+                                                    <i class="fas fa-user text-blue-500"></i>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                                        <div class="text-sm text-gray-600 font-medium">{{ $user->email }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                                        <span class="px-3 py-1.5 inline-flex items-center text-xs font-semibold rounded-full shadow-sm
+                                            bg-gray-100 text-gray-800 ring-1 ring-gray-300">
+                                            <i class="fas fa-building mr-1.5"></i>
+                                            {{ $user->unit ? $user->unit->name : 'Belum Ada Unit' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                                        <span class="px-3 py-1.5 inline-flex items-center text-xs font-semibold rounded-full shadow-sm
+                                            {{ $user->role === 'super_admin' ? 'bg-purple-100 text-purple-800 ring-1 ring-purple-300' : 
+                                               ($user->role === 'admin' ? 'bg-blue-100 text-blue-800 ring-1 ring-blue-300' : 
+                                               'bg-green-100 text-green-800 ring-1 ring-green-300') }}">
+                                            <i class="fas {{ $user->role === 'super_admin' ? 'fa-user-shield' : 
+                                                   ($user->role === 'admin' ? 'fa-user-tie' : 'fa-user') }} mr-1.5"></i>
+                                            {{ ucfirst(str_replace('_', ' ', $user->role)) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap border-r border-gray-200">
+                                        <span class="px-3 py-1.5 inline-flex items-center text-xs font-semibold rounded-full shadow-sm
+                                            {{ $user->is_active ? 'bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300' : 'bg-red-100 text-red-800 ring-1 ring-red-300' }}">
+                                            <i class="fas {{ $user->is_active ? 'fa-check-circle' : 'fa-times-circle' }} mr-1.5"></i>
+                                            {{ $user->is_active ? 'Aktif' : 'Tidak Aktif' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        @can('manage-users')
+                                        <div class="flex space-x-3">
+                                            <a href="{{ route('user-management.edit', $user->id) }}" 
+                                               class="p-1.5 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            @if($user->id !== auth()->id())
+                                            <button onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')" 
+                                                    class="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors duration-200">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                            <form id="delete-form-{{ $user->id }}" 
+                                                  action="{{ route('user-management.destroy', $user->id) }}" 
+                                                  method="POST" 
+                                                  class="hidden">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+                                            @endif
+                                        </div>
+                                        @endcan
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State yang Lebih Menarik -->
+                    @if($users->isEmpty())
+                    <div class="text-center py-12 bg-gray-50">
+                        <div class="rounded-full bg-blue-100 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-users text-blue-500 text-2xl"></i>
+                        </div>
+                        <h3 class="text-gray-900 font-medium text-lg mb-2">Belum ada pengguna</h3>
+                        <p class="text-gray-500">Mulai tambahkan pengguna baru untuk mengelola sistem</p>
+                    </div>
+                    @endif
+
+                    <!-- Pagination dengan Style yang Lebih Baik -->
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                        {{ $users->links() }}
+                    </div>
                 </div>
             </div>
         </main>

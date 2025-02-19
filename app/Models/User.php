@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'unit_id',
     ];
 
     /**
@@ -46,6 +47,14 @@ class User extends Authenticatable
         'password' => 'hashed',
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Get the unit that owns the user
+     */
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
 
     /**
      * Check if user has a specific role

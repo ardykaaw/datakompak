@@ -120,6 +120,29 @@
                                 @enderror
                             </div>
 
+                            <!-- Unit -->
+                            <div>
+                                <label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Unit
+                                </label>
+                                <div class="mt-1">
+                                    <select name="unit" 
+                                            id="unit" 
+                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm @error('unit') border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500 @enderror"
+                                            required>
+                                        <option value="">Pilih Unit</option>
+                                        @foreach($units as $unit)
+                                            <option value="{{ $unit->id }}" {{ old('unit') == $unit->id ? 'selected' : '' }}>
+                                                {{ $unit->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('unit')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Active Status -->
                             <div>
                                 <label for="is_active" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -154,4 +177,4 @@
         </main>
     </div>
 </div>
-@endsection 
+@endsection
