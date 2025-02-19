@@ -13,7 +13,14 @@ class Machine extends Model
         'name',
         'code',
         'specifications',
+        'dmn',
+        'dmp',
         'unit_id'
+    ];
+
+    protected $casts = [
+        'dmn' => 'decimal:2',
+        'dmp' => 'decimal:2',
     ];
 
     public function unit()

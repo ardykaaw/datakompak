@@ -101,11 +101,13 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <input type="number" step="0.01" 
                                                    name="data[{{ $machine->id }}][capable_power]" 
+                                                   value="{{ $machine->dmn }}"
                                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <input type="number" step="0.01" 
                                                    name="data[{{ $machine->id }}][supply_power]" 
+                                                   value="{{ $machine->dmp }}"
                                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
