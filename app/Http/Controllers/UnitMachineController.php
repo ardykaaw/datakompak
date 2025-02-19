@@ -99,4 +99,30 @@ class UnitMachineController extends Controller
         $units = Unit::with('machines')->get();
         return view('unit-mesin.unit', compact('units'));
     }
+
+    public function editMachine(Unit $unit, Machine $machine)
+    {
+        // Ambil semua unit untuk dropdown
+        $units = Unit::all();
+        
+        return view('unit-mesin.edit-machine', compact('unit', 'machine', 'units'));
+    }
+
+    public function updateMachine(Request $request, Unit $unit, Machine $machine)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string|max:255',
+            'code' => 'required|string|max:50',
+            'unit_id' => 'required|exists:units,id',
+            'dmn' => 'required|numeric',
+            'dmp' => 'required|numeric',
+            'load' => 'required|numeric',
+        ]);
+
+        $machine->update($validated);
+
+        return redirect()->route('unit-mesin.mesin')
+            ->with('success', 'Mesin berhasil diperbarui');
+    }
 } 

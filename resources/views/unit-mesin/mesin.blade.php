@@ -169,6 +169,8 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spesifikasi</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DMN</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DMP</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                     </tr>
@@ -192,15 +194,22 @@
                                                     <div class="text-sm text-gray-900">{{ $machine->specifications ?: '-' }}</div>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">{{ number_format($machine->dmn, 2) ?: '-' }}</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                    <div class="text-sm text-gray-900">{{ number_format($machine->dmp, 2) ?: '-' }}</div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap">
                                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                         Aktif
                                                     </span>
                                                 </td>
                                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <div class="flex justify-end space-x-2">
-                                                        <button class="text-blue-600 hover:text-blue-900">
+                                                        <a href="{{ route('unit-mesin.machines.edit', [$unit, $machine]) }}" 
+                                                           class="text-blue-600 hover:text-blue-900">
                                                             <i class="fas fa-edit"></i>
-                                                        </button>
+                                                        </a>
                                                         <form action="{{ route('unit-mesin.machines.destroy', [$unit, $machine]) }}" method="POST" class="inline">
                                                             @csrf
                                                             @method('DELETE')

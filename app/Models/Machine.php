@@ -35,6 +35,6 @@ class Machine extends Model
 
     public function logs()
     {
-        return $this->hasMany(MachineLog::class);
+        return $this->hasMany(MachineLog::class)->latest('input_time');
     }
 } 

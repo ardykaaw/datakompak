@@ -48,26 +48,39 @@
                     
                     <!-- Time Selection -->
                     <div class="bg-white shadow rounded-lg mb-6 p-4">
-                        <div class="max-w-xs">
-                            <label for="input_time" class="block text-sm font-medium text-gray-700">Waktu Input</label>
-                            <select name="input_time" id="input_time" required
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                <option value="">Pilih Waktu</option>
-                                <option value="06:00">06:00 (Pagi)</option>
-                                <option value="11:00">11:00 (Siang)</option>
-                                <option value="14:00">14:00 (Siang)</option>
-                                <option value="18:00">18:00 (Malam)</option>
-                                <option value="19:00">19:00 (Malam)</option>
-                            </select>
+                        <div class="flex items-center justify-between">
+                            <div class="w-64">
+                                <label for="input_time" class="block text-sm font-medium text-gray-700">Waktu Input</label>
+                                <select name="input_time" id="input_time" required
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option value="">Pilih Waktu</option>
+                                    <option value="06:00">06:00 (Pagi)</option>
+                                    <option value="11:00">11:00 (Siang)</option>
+                                    <option value="14:00">14:00 (Siang)</option>
+                                    <option value="18:00">18:00 (Malam)</option>
+                                    <option value="19:00">19:00 (Malam)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <a href="{{ route('laporan-kesiapan-kit.index') }}"
+                                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A749B]">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Lihat Hasil Inputan
+                                </a>
+                                <button type="button" @click="refreshLastData()"
+                                        class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A749B]">
+                                    <i class="fas fa-sync-alt mr-2"></i>
+                                    Refresh Data Terakhir
+                                </button>
+                                
+                                <button type="submit"
+                                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0A749B] hover:bg-[#086384] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A749B]">
+                                    <i class="fas fa-save mr-2"></i>
+                                    Simpan Data
+                                </button>
+                            </div>
                         </div>
-                        
-                    </div>
-                    <div class="flex justify-end mb-6">
-                        <button type="submit"
-                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            <i class="fas fa-save mr-2"></i>
-                            Simpan Data
-                        </button>
                     </div>
 
                     <!-- Units and Machines Input -->
@@ -141,4 +154,25 @@
         </main>
     </div>
 </div>
+
+@push('scripts')
+<script>
+function refreshLastData() {
+    fetch('/api/machines/last-data')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(machine => {
+                if (machine.logs && machine.logs.length > 0) {
+                    const lastLog = machine.logs[0];
+                    document.querySelector(`input[name="data[${machine.id}][capable_power]"]`).value = lastLog.capable_power || '';
+                    document.querySelector(`input[name="data[${machine.id}][supply_power]"]`).value = lastLog.supply_power || '';
+                    document.querySelector(`input[name="data[${machine.id}][current_load]"]`).value = lastLog.current_load || '';
+                    document.querySelector(`select[name="data[${machine.id}][status]"]`).value = lastLog.status || '';
+                }
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
+@endpush
 @endsection 

@@ -56,7 +56,7 @@
                     </div>
 
                     <!-- Unit's Machines Table -->
-                    <div class="p-6">
+                    <div class="p-6 border border-gray-200 rounded-lg">
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
@@ -73,22 +73,22 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach($unit->machines as $index => $machine)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
                                             {{ $index + 1 }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-medium text-gray-900">{{ $machine->name }}</div>
+                                            <div class="text-sm font-medium text-gray-900 border-r border-gray-200">{{ $machine->name }}</div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
                                             {{ $machine->logs->first() ? number_format($machine->logs->first()->capable_power ?? 0, 2) : '0.00' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200   ">
                                             {{ $machine->logs->first() ? number_format($machine->logs->first()->supply_power ?? 0, 2) : '0.00' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-r border-gray-200">
                                             {{ $machine->logs->first() ? number_format($machine->logs->first()->current_load ?? 0, 2) : '0.00' }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap border-r border-gray-200">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                 {{
                                                     ($machine->logs->first()->status ?? '') === 'OPS' ? 'bg-green-100 text-green-800' :
@@ -101,7 +101,7 @@
                                                 {{ $machine->logs->first()->status ?? 'N/A' }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-200">
                                             {{ $machine->logs->first() ? $machine->logs->first()->input_time->format('d/m/Y H:i') : '-' }}
                                         </td>
                                     </tr>

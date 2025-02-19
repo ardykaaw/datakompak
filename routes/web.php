@@ -88,6 +88,9 @@ Route::middleware([
         // Route untuk machines
         Route::post('/{unit}/machines', [UnitMachineController::class, 'storeMachine'])->name('unit-mesin.machines.store');
         Route::delete('/{unit}/machines/{machine}', [UnitMachineController::class, 'destroyMachine'])->name('unit-mesin.machines.destroy');
+
+        Route::get('/{unit}/machines/{machine}/edit', [UnitMachineController::class, 'editMachine'])->name('unit-mesin.machines.edit');
+        Route::put('/{unit}/machines/{machine}', [UnitMachineController::class, 'updateMachine'])->name('unit-mesin.machines.update');
     });
 
     // Ikhtisar Harian View Routes
