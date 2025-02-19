@@ -95,69 +95,76 @@
                                 <h2 class="text-xl font-semibold text-gray-800">Daftar Mesin</h2>
                                 <p class="text-sm text-gray-500">Kelola data mesin di setiap unit</p>
                             </div>
-                            <button onclick="Swal.fire({
-                                title: 'Tambah Mesin Baru',
-                                html: `
-                                    <form id='addMachineForm' class='space-y-4'>
-                                        <select id='unitSelect' class='w-full px-3 py-2 border rounded-lg'>
-                                            <option value=''>Pilih Unit</option>
-                                            @foreach($units as $unit)
-                                                <option value='{{ $unit->id }}'>{{ $unit->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <input type='text' id='machineName' class='w-full px-3 py-2 border rounded-lg' placeholder='Nama Mesin'>
-                                        <input type='text' id='machineCode' class='w-full px-3 py-2 border rounded-lg' placeholder='Kode Mesin'>
-                                        <textarea id='machineSpecs' class='w-full px-3 py-2 border rounded-lg' placeholder='Spesifikasi'></textarea>
-                                    </form>
-                                `,
-                                showCancelButton: true,
-                                confirmButtonText: 'Simpan',
-                                cancelButtonText: 'Batal',
-                                confirmButtonColor: '#3B82F6',
-                                preConfirm: () => {
-                                    const unitId = document.getElementById('unitSelect').value;
-                                    if (!unitId) {
-                                        Swal.showValidationMessage('Silakan pilih unit');
-                                        return false;
+                            <div class="flex space-x-3">
+                                <a href="{{ route('unit-mesin.index') }}" 
+                                   class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Lihat Status Unit dan Mesin
+                                </a>
+                                <button onclick="Swal.fire({
+                                    title: 'Tambah Mesin Baru',
+                                    html: `
+                                        <form id='addMachineForm' class='space-y-4'>
+                                            <select id='unitSelect' class='w-full px-3 py-2 border rounded-lg'>
+                                                <option value=''>Pilih Unit</option>
+                                                @foreach($units as $unit)
+                                                    <option value='{{ $unit->id }}'>{{ $unit->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <input type='text' id='machineName' class='w-full px-3 py-2 border rounded-lg' placeholder='Nama Mesin'>
+                                            <input type='text' id='machineCode' class='w-full px-3 py-2 border rounded-lg' placeholder='Kode Mesin'>
+                                            <textarea id='machineSpecs' class='w-full px-3 py-2 border rounded-lg' placeholder='Spesifikasi'></textarea>
+                                        </form>
+                                    `,
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Simpan',
+                                    cancelButtonText: 'Batal',
+                                    confirmButtonColor: '#3B82F6',
+                                    preConfirm: () => {
+                                        const unitId = document.getElementById('unitSelect').value;
+                                        if (!unitId) {
+                                            Swal.showValidationMessage('Silakan pilih unit');
+                                            return false;
+                                        }
+                                        
+                                        const form = document.createElement('form');
+                                        form.method = 'POST';
+                                        form.action = `/unit-mesin/${unitId}/machines`;
+                                        
+                                        const csrf = document.createElement('input');
+                                        csrf.type = 'hidden';
+                                        csrf.name = '_token';
+                                        csrf.value = '{{ csrf_token() }}';
+                                        
+                                        const name = document.createElement('input');
+                                        name.type = 'hidden';
+                                        name.name = 'name';
+                                        name.value = document.getElementById('machineName').value;
+                                        
+                                        const code = document.createElement('input');
+                                        code.type = 'hidden';
+                                        code.name = 'code';
+                                        code.value = document.getElementById('machineCode').value;
+                                        
+                                        const specs = document.createElement('input');
+                                        specs.type = 'hidden';
+                                        specs.name = 'specifications';
+                                        specs.value = document.getElementById('machineSpecs').value;
+                                        
+                                        form.appendChild(csrf);
+                                        form.appendChild(name);
+                                        form.appendChild(code);
+                                        form.appendChild(specs);
+                                        
+                                        document.body.appendChild(form);
+                                        form.submit();
                                     }
-                                    
-                                    const form = document.createElement('form');
-                                    form.method = 'POST';
-                                    form.action = `/unit-mesin/${unitId}/machines`;
-                                    
-                                    const csrf = document.createElement('input');
-                                    csrf.type = 'hidden';
-                                    csrf.name = '_token';
-                                    csrf.value = '{{ csrf_token() }}';
-                                    
-                                    const name = document.createElement('input');
-                                    name.type = 'hidden';
-                                    name.name = 'name';
-                                    name.value = document.getElementById('machineName').value;
-                                    
-                                    const code = document.createElement('input');
-                                    code.type = 'hidden';
-                                    code.name = 'code';
-                                    code.value = document.getElementById('machineCode').value;
-                                    
-                                    const specs = document.createElement('input');
-                                    specs.type = 'hidden';
-                                    specs.name = 'specifications';
-                                    specs.value = document.getElementById('machineSpecs').value;
-                                    
-                                    form.appendChild(csrf);
-                                    form.appendChild(name);
-                                    form.appendChild(code);
-                                    form.appendChild(specs);
-                                    
-                                    document.body.appendChild(form);
-                                    form.submit();
-                                }
-                            })" 
-                            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center">
-                                <i class="fas fa-plus mr-2"></i>
-                                Tambah Mesin
-                            </button>
+                                })" 
+                                class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Tambah Mesin
+                                </button>
+                            </div>
                         </div>
 
                         <!-- Table -->
@@ -210,14 +217,16 @@
                                                            class="text-blue-600 hover:text-blue-900">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <form action="{{ route('unit-mesin.machines.destroy', [$unit, $machine]) }}" method="POST" class="inline">
+                                                        <button onclick="confirmDelete({{ $unit->id }}, {{ $machine->id }}, '{{ $machine->name }}')" 
+                                                                class="text-red-600 hover:text-red-900">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                        <form id="delete-form-{{ $unit->id }}-{{ $machine->id }}" 
+                                                              action="{{ route('unit-mesin.machines.destroy', [$unit, $machine]) }}" 
+                                                              method="POST" 
+                                                              class="hidden">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" 
-                                                                    class="text-red-600 hover:text-red-900"
-                                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus mesin ini?')">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
                                                         </form>
                                                     </div>
                                                 </td>
@@ -243,4 +252,24 @@
         </main>
     </div>
 </div>
+
+<script>
+function confirmDelete(unitId, machineId, machineName) {
+    Swal.fire({
+        title: 'Konfirmasi Hapus',
+        html: `Apakah Anda yakin ingin menghapus mesin <strong>${machineName}</strong>?<br>Tindakan ini tidak dapat dibatalkan.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById(`delete-form-${unitId}-${machineId}`).submit();
+        }
+    });
+}
+</script>
 @endsection
