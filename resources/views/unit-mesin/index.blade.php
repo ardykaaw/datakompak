@@ -52,81 +52,81 @@
         <main class="p-4">
             <div class="max-w-7xl mx-auto">
                 <!-- Overview Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <!-- Total Mesin Card -->
-                    <div class="bg-blue-600 rounded-lg shadow-lg overflow-hidden">
-                        <div class="px-6 py-5">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 dark:bg-gradient-to-br dark:from-gray-800 dark:to-blue-900/50 border border-blue-200 dark:border-blue-500/30 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
+                        <div class="px-4 py-3">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-white">Total Mesin</p>
-                                    <h3 class="text-4xl font-bold text-white mt-2">{{ $totalMachines }}</h3>
+                                    <p class="text-sm font-medium text-blue-700 dark:text-blue-300">Total Mesin</p>
+                                    <h3 class="text-2xl font-bold text-blue-800 dark:text-blue-200 mt-1">{{ $totalMachines }}</h3>
                                 </div>
-                                <div class="w-14 h-14 flex items-center justify-center rounded-lg bg-blue-500">
-                                    <i class="fas fa-cogs text-2xl text-white"></i>
+                                <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-blue-500 bg-opacity-15 dark:bg-blue-400/20">
+                                    <i class="fas fa-cogs text-xl text-blue-700 dark:text-blue-300"></i>
                                 </div>
                             </div>
-                            <div class="mt-4 border-t border-blue-500 pt-4">
+                            <div class="mt-3 border-t border-blue-200 dark:border-blue-500/30 pt-3">
                                 <a href="{{ route('unit-mesin.mesin') }}" 
-                                   class="text-sm text-white hover:text-blue-100 inline-flex items-center transition-colors duration-200">
+                                   class="text-sm text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100 inline-flex items-center transition-colors duration-200">
                                     <span>Kelola data mesin</span>
-                                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                                    <i class="fas fa-arrow-right ml-1.5 text-xs"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Unit Card -->
-                    <div class="bg-red-600 rounded-lg shadow-lg overflow-hidden">
-                        <div class="px-6 py-5">
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100/50 dark:bg-gradient-to-br dark:from-gray-800 dark:to-purple-900/50 border border-purple-200 dark:border-purple-500/30 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
+                        <div class="px-4 py-3">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-white">Total Unit</p>
-                                    <h3 class="text-4xl font-bold text-white mt-2">{{ $units->count() }}</h3>
+                                    <p class="text-sm font-medium text-purple-700 dark:text-purple-300">Total Unit</p>
+                                    <h3 class="text-2xl font-bold text-purple-800 dark:text-purple-200 mt-1">{{ $units->count() }}</h3>
                                 </div>
-                                <div class="w-14 h-14 flex items-center justify-center rounded-lg bg-red-500">
-                                    <i class="fas fa-industry text-2xl text-white"></i>
+                                <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-purple-500 bg-opacity-15 dark:bg-purple-400/20">
+                                    <i class="fas fa-industry text-xl text-purple-700 dark:text-purple-300"></i>
                                 </div>
                             </div>
-                            <div class="mt-4 border-t border-red-500 pt-4">
+                            <div class="mt-3 border-t border-purple-200 dark:border-purple-500/30 pt-3">
                                 <a href="{{ route('unit-mesin.unit') }}" 
-                                   class="text-sm text-white hover:text-red-100 inline-flex items-center transition-colors duration-200">
+                                   class="text-sm text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-100 inline-flex items-center transition-colors duration-200">
                                     <span>Kelola data unit</span>
-                                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                                    <i class="fas fa-arrow-right ml-1.5 text-xs"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Ringkasan Card -->
-                    <div class="bg-green-600 rounded-lg shadow-lg overflow-hidden">
-                        <div class="px-6 py-5">
-                            <div class="flex items-center justify-between mb-4">
-                                <p class="text-sm font-medium text-white">Statistik</p>
-                                <div class="w-14 h-14 flex items-center justify-center rounded-lg bg-green-500">
-                                    <i class="fas fa-chart-pie text-2xl text-white"></i>
+                    <div class="bg-gradient-to-br from-teal-50 to-teal-100/50 dark:bg-gradient-to-br dark:from-gray-800 dark:to-teal-900/50 border border-teal-200 dark:border-teal-500/30 rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all duration-300">
+                        <div class="px-4 py-3">
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="text-sm font-medium text-teal-700 dark:text-teal-300">Statistik</p>
+                                <div class="w-12 h-12 flex items-center justify-center rounded-lg bg-teal-500 bg-opacity-15 dark:bg-teal-400/20">
+                                    <i class="fas fa-chart-pie text-xl text-teal-700 dark:text-teal-300"></i>
                                 </div>
                             </div>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center border-b border-green-500 pb-3">
-                                    <p class="text-sm text-white">Rata-rata Mesin/Unit</p>
-                                    <span class="text-sm font-bold text-white">
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center border-b border-teal-200 dark:border-teal-500/30 pb-2">
+                                    <p class="text-sm text-teal-700 dark:text-teal-300">Rata-rata Mesin/Unit</p>
+                                    <span class="text-sm font-bold text-teal-800 dark:text-teal-200">
                                         {{ $units->count() > 0 ? number_format($totalMachines / $units->count(), 1) : '0' }}
                                     </span>
                                 </div>
-                                <div class="flex justify-between items-center pt-2">
-                                    <p class="text-sm text-white">Total Kapasitas</p>
-                                    <span class="text-sm font-bold text-white">
+                                <div class="flex justify-between items-center pt-1">
+                                    <p class="text-sm text-teal-700 dark:text-teal-300">Total Kapasitas</p>
+                                    <span class="text-sm font-bold text-teal-800 dark:text-teal-200">
                                         {{ number_format($units->sum(function($unit) { 
                                             return $unit->machines->sum('capacity');
                                         }), 0) }} MW
                                     </span>
                                 </div>
                             </div>
-                            <div class="mt-4 border-t border-green-500 pt-4">
+                            <div class="mt-3 border-t border-teal-200 dark:border-teal-500/30 pt-3">
                                 <a href="{{ route('analytics') }}" 
-                                   class="text-sm text-white hover:text-green-100 inline-flex items-center transition-colors duration-200">
+                                   class="text-sm text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-100 inline-flex items-center transition-colors duration-200">
                                     <span>Lihat analisis lengkap</span>
-                                    <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                                    <i class="fas fa-arrow-right ml-1.5 text-xs"></i>
                                 </a>
                             </div>
                         </div>
