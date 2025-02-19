@@ -7,6 +7,7 @@ use App\Models\Machine;
 use App\Models\MachineLog;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanKesiapanKitController extends Controller
 {
@@ -14,6 +15,9 @@ class LaporanKesiapanKitController extends Controller
     {
         $units = Unit::with(['machines' => function($query) {
             $query->with(['logs' => function($query) {
+                if (request()->has('input_time')) {
+                    $query->whereTime('input_time', request('input_time'));
+                }
                 $query->latest('input_time')->limit(1);
             }]);    
         }])->get();
@@ -87,5 +91,38 @@ class LaporanKesiapanKitController extends Controller
 
         return redirect()->route('laporan-kesiapan-kit.index')
                         ->with('success', 'Data kesiapan berhasil disimpan');
+    }
+
+    public function exportPDF()
+    {
+        $units = Unit::with(['machines' => function($query) {
+            $query->with(['logs' => function($query) {
+                $query->latest('input_time')->limit(1);
+            }]);
+        }])->get();
+
+        $pdf = PDF::loadView('laporan-kesiapan-kit.pdf', compact('units'));
+        $pdf->setPaper('A4', 'portrait');
+        
+        return $pdf->download('laporan-kesiapan-kit-'.now()->format('Y-m-d').'.pdf');
+    }
+
+    public function getByInputTime(Request $request)
+    {
+        $query = MachineLog::with(['machine', 'unit']);
+        
+        if ($request->filled('input_time')) {
+            $query->whereTime('input_time', $request->input_time);
+        }
+        
+        $logs = $query->latest('input_time')
+                      ->get()
+                      ->groupBy('machine_id')
+                      ->map(function($machineLogs) {
+                          return $machineLogs->first();
+                      })
+                      ->values();
+        
+        return response()->json($logs);
     }
 }

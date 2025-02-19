@@ -19,7 +19,7 @@
     <!-- Container untuk background dengan padding -->
     <div class="bg-[#0A749B] dark:bg-gray-800 rounded-2xl h-full px-4 py-6 flex flex-col">
         <!-- Logo section -->
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-center mb-8">
             <img src="{{ url('images/navlogo.png') }}" alt="PLN Logo" 
                  :class="{ 'w-40': isSidebarOpen, 'w-10': !isSidebarOpen }">
         </div>
@@ -125,7 +125,8 @@
                 <span class="text-base" x-show="isSidebarOpen">Manajemen Pengguna</span>
             </a>
             @endif
-
+            
+            @if(auth()->user()->isSuperAdmin())
             <a href="{{ route('settings') }}" 
                class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
                :class="{ 
@@ -137,6 +138,7 @@
                 <i class="fas fa-cog w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
                 <span class="text-base" x-show="isSidebarOpen">Settings</span>
             </a>
+            @endif
         </nav>
 
         <!-- Bottom Section: User & Logout -->

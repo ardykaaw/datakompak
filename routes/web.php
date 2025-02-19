@@ -107,4 +107,10 @@ Route::middleware([
         Route::get('/create', [LaporanKesiapanKitController::class, 'create'])->name('create');
         Route::post('/', [LaporanKesiapanKitController::class, 'store'])->name('store');
     });
+
+    Route::get('/laporan-kesiapan-kit/export-pdf', [LaporanKesiapanKitController::class, 'exportPDF'])
+        ->name('laporan-kesiapan-kit.export-pdf');
+
+    Route::get('/api/machine-logs', [LaporanKesiapanKitController::class, 'getByInputTime'])
+         ->name('api.machine-logs');
 }); 
