@@ -23,4 +23,21 @@ class Unit extends Model
     {
         return $this->hasMany(IkhtisarHarian::class);
     }
+
+    /**
+     * Get all HOP records for this unit
+     */
+    public function hops()
+    {
+        return $this->hasMany(UnitHop::class);
+    }
+
+    /**
+     * Get the latest HOP record for this unit
+     */
+    public function latestHop()
+    {
+        return $this->hasOne(UnitHop::class)
+            ->latest('input_time');
+    }
 } 

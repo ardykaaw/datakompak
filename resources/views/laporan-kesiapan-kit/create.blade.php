@@ -2,6 +2,102 @@
 
 @section('title', 'Input Laporan Kesiapan KIT')
 
+@push('scripts')
+<script>
+// Define the function globally
+window.refreshLastData = function() {
+    const inputTime = document.getElementById('input_time').value;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    // Show loading indicator
+    Swal.fire({
+        title: 'Memuat Data...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Debug log
+    console.log('Fetching data with input time:', inputTime);
+
+    fetch('/api/machines/last-data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            input_time: inputTime
+        })
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Received data:', data);
+
+        if (data.machines) {
+            // Update machine data
+            data.machines.forEach(log => {
+                try {
+                    // Update machine inputs
+                    const capablePowerInput = document.querySelector(`input[name="data[${log.machine_id}][capable_power]"]`);
+                    const supplyPowerInput = document.querySelector(`input[name="data[${log.machine_id}][supply_power]"]`);
+                    const currentLoadInput = document.querySelector(`input[name="data[${log.machine_id}][current_load]"]`);
+                    const statusSelect = document.querySelector(`select[name="data[${log.machine_id}][status]"]`);
+
+                    if (capablePowerInput) capablePowerInput.value = log.capable_power || '';
+                    if (supplyPowerInput) supplyPowerInput.value = log.supply_power || '';
+                    if (currentLoadInput) currentLoadInput.value = log.current_load || '';
+                    if (statusSelect) statusSelect.value = log.status || '';
+                } catch (err) {
+                    console.error('Error updating machine:', log.machine_id, err);
+                }
+            });
+        }
+
+        if (data.hops) {
+            // Update HOP data
+            data.hops.forEach(hop => {
+                try {
+                    const hopInput = document.querySelector(`input[name="hop[${hop.unit_id}]"]`);
+                    if (hopInput) {
+                        hopInput.value = hop.hop_value || '';
+                    }
+                } catch (err) {
+                    console.error('Error updating HOP:', hop.unit_id, err);
+                }
+            });
+        }
+
+        // Close loading indicator and show success message
+        Swal.fire({
+            icon: 'success',
+            title: 'Data berhasil diperbarui',
+            showConfirmButton: false,
+            timer: 1500
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Terjadi kesalahan saat mengambil data'
+        });
+    });
+};
+
+// Add event listener when document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded');
+});
+</script>
+@endpush
+
 @section('content')
 <div class="min-h-screen bg-gray-100"
      x-data="{ 
@@ -68,7 +164,8 @@
                                     <i class="fas fa-eye mr-2"></i>
                                     Lihat Hasil Inputan
                                 </a>
-                                <button type="button" @click="refreshLastData()"
+                                <button type="button" 
+                                        onclick="refreshLastData()"
                                         class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A749B]">
                                     <i class="fas fa-sync-alt mr-2"></i>
                                     Refresh Data Terakhir
@@ -87,7 +184,23 @@
                     @foreach($units as $unit)
                     <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
                         <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                            <h3 class="text-lg font-medium text-gray-900">{{ $unit->name }}</h3>
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-lg font-medium text-gray-900">{{ $unit->name }}</h3>
+                                <div class="w-64">
+                                    <label for="hop_{{ $unit->id }}" class="block text-sm font-medium text-gray-700">HOP (Hari)</label>
+                                    <input type="number" 
+                                           step="0.01" 
+                                           min="0"
+                                           id="hop_{{ $unit->id }}"
+                                           name="hop[{{ $unit->id }}]"
+                                           value="{{ optional(\App\Models\UnitHop::getLatestHop($unit->id))->hop_value }}"
+                                           class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md @error('hop.'.$unit->id) border-red-500 @enderror"
+                                           placeholder="Masukkan nilai HOP">
+                                    @error('hop.'.$unit->id)
+                                        <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="overflow-x-auto">
@@ -105,30 +218,30 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach($unit->machines as $index => $machine)
                                     <tr>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ $index + 1 }}
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 border border-gray-300">
+                                                {{ $index + 1 }}
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap border border-gray-300">
                                             <div class="text-sm font-medium text-gray-900">{{ $machine->name }}</div>
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap border border-gray-300">
                                             <input type="number" step="0.01" 
                                                    name="data[{{ $machine->id }}][capable_power]" 
                                                    value="{{ $machine->dmn }}"
                                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap border border-gray-300">
                                             <input type="number" step="0.01" 
                                                    name="data[{{ $machine->id }}][supply_power]" 
                                                    value="{{ $machine->dmp }}"
                                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap border border-gray-300">
                                             <input type="number" step="0.01" 
                                                    name="data[{{ $machine->id }}][current_load]" 
                                                    class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                         </td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
+                                        <td class="px-6 py-4 whitespace-nowrap border border-gray-300">
                                             <select name="data[{{ $machine->id }}][status]" 
                                                     class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                                                 <option value="">Pilih Status</option>
@@ -154,25 +267,5 @@
         </main>
     </div>
 </div>
-
-@push('scripts')
-<script>
-function refreshLastData() {
-    fetch('/api/machines/last-data')
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(machine => {
-                if (machine.logs && machine.logs.length > 0) {
-                    const lastLog = machine.logs[0];
-                    document.querySelector(`input[name="data[${machine.id}][capable_power]"]`).value = lastLog.capable_power || '';
-                    document.querySelector(`input[name="data[${machine.id}][supply_power]"]`).value = lastLog.supply_power || '';
-                    document.querySelector(`input[name="data[${machine.id}][current_load]"]`).value = lastLog.current_load || '';
-                    document.querySelector(`select[name="data[${machine.id}][status]"]`).value = lastLog.status || '';
-                }
-            });
-        })
-        .catch(error => console.error('Error:', error));
-}
-</script>
-@endpush
 @endsection 
+

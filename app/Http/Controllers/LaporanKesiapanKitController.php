@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Unit;
 use App\Models\Machine;
 use App\Models\MachineLog;
+use App\Models\UnitHop;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Log;
 
 class LaporanKesiapanKitController extends Controller
 {
@@ -24,6 +26,10 @@ class LaporanKesiapanKitController extends Controller
 
         // Transform data untuk menampilkan log terbaru
         $units->each(function($unit) {
+            // Load latest HOP data
+            $latestHop = UnitHop::getLatestHop($unit->id);
+            $unit->hop = $latestHop ? $latestHop->hop_value : null;
+            
             $unit->machines->each(function($machine) {
                 $latestLog = $machine->logs->first();
                 if ($latestLog) {
@@ -54,11 +60,24 @@ class LaporanKesiapanKitController extends Controller
             'data.*.supply_power' => 'nullable|numeric',
             'data.*.current_load' => 'nullable|numeric',
             'data.*.status' => 'nullable|in:OPS,RSH,FO,MO,PO',
+            'hop' => 'array',
+            'hop.*' => 'nullable|numeric|min:0',
         ]);
 
         $inputTime = Carbon::parse($request->input_time);
 
-        // Store the data only for machines that have any data entered
+        // Store HOP values
+        foreach ($request->hop ?? [] as $unitId => $hopValue) {
+            if (!is_null($hopValue)) {
+                UnitHop::create([
+                    'unit_id' => $unitId,
+                    'hop_value' => $hopValue,
+                    'input_time' => $inputTime,
+                ]);
+            }
+        }
+
+        // Store the machine data
         foreach ($request->data ?? [] as $machineId => $data) {
             // Check if any field has data
             if (!empty($data['capable_power']) || 
@@ -90,7 +109,7 @@ class LaporanKesiapanKitController extends Controller
         }
 
         return redirect()->route('laporan-kesiapan-kit.index')
-                        ->with('success', 'Data kesiapan berhasil disimpan');
+                        ->with('success', 'Data kesiapan dan HOP berhasil disimpan');
     }
 
     public function exportPDF()
@@ -124,5 +143,54 @@ class LaporanKesiapanKitController extends Controller
                       ->values();
         
         return response()->json($logs);
+    }
+
+    public function getLastData(Request $request)
+    {
+        try {
+            Log::info('getLastData called with input time: ' . $request->input_time);
+
+            // Get latest machine logs
+            $machineLogs = MachineLog::with('machine')
+                ->when($request->input_time, function($query, $time) {
+                    return $query->whereTime('input_time', $time);
+                })
+                ->latest('input_time')
+                ->get()
+                ->groupBy('machine_id')
+                ->map(function($logs) {
+                    return $logs->first();
+                });
+
+            // Get latest HOP data
+            $hopData = UnitHop::when($request->input_time, function($query, $time) {
+                    return $query->whereTime('input_time', $time);
+                })
+                ->latest('input_time')
+                ->get()
+                ->groupBy('unit_id')
+                ->map(function($hops) {
+                    return $hops->first();
+                });
+
+            Log::info('Data retrieved', [
+                'machines_count' => $machineLogs->count(),
+                'hops_count' => $hopData->count()
+            ]);
+
+            return response()->json([
+                'machines' => $machineLogs->values(),
+                'hops' => $hopData->values(),
+                'status' => 'success'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getLastData: ' . $e->getMessage());
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat mengambil data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

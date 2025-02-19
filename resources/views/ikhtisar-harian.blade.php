@@ -260,6 +260,7 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="text-sm text-gray-500">{{ now()->format('d M Y') }}</span>
+                    
                     <a href="{{ route('ikhtisar-harian.view') }}" 
                     class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors duration-200">
                      <i class="fas fa-table mr-2"></i>
@@ -269,6 +270,11 @@
                         <i class="fas fa-sync-alt mr-2"></i>
                         Refresh Data
                     </button>
+                    <button type="submit" 
+                    class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                <i class="fas fa-save mr-2"></i>
+                Simpan Semua Data
+            </button>
                 </div>
             </div>
         </header>
@@ -371,13 +377,7 @@
                         @csrf
                         
                         <!-- Submit Button at Top -->
-                        <div class="mb-6 flex justify-end">
-                            <button type="submit" 
-                                    class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                <i class="fas fa-save mr-2"></i>
-                                Simpan Semua Data
-                            </button>
-                        </div>
+                        
 
                         @foreach($units as $unit)
                         <div class="bg-white shadow rounded-lg p-6 mb-6">

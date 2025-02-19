@@ -34,9 +34,9 @@
                     </button>
                     <h1 class="text-xl font-semibold text-gray-900">Laporan Kesiapan KIT</h1>
                 </div>
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center gap-4">
                     <!-- Export Buttons -->
-                    <div class="flex space-x-2">
+                    <div class="flex gap-2">
                         <a href="{{ route('laporan-kesiapan-kit.export-pdf') }}" 
                            class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
                             <i class="fas fa-file-pdf mr-2"></i>
@@ -65,6 +65,92 @@
                 </div>
             </div>
         </header>
+
+        <!-- Summary Cards -->
+        <div class="max-w-7xl mx-auto p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Total Daya Mampu Subsistem Kendari -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Subsistem Kendari</h3>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">Total Daya Mampu:</span>
+                        <span class="text-xl font-bold text-[#0A749B]">
+                            @php
+                                $totalKendari = $units->filter(function($unit) {
+                                    return str_contains($unit->name, 'Kendari') || 
+                                           str_contains($unit->name, 'Wua Wua') || 
+                                           str_contains($unit->name, 'Poasia');
+                                })->sum(function($unit) {
+                                    return $unit->machines->sum(function($machine) {
+                                        return $machine->logs->first()->capable_power ?? 0;
+                                    });
+                                });
+                            @endphp
+                            {{ number_format($totalKendari, 2) }} MW
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Total Daya Mampu Subsistem Bau Bau -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Subsistem Bau Bau</h3>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">Total Daya Mampu:</span>
+                        <span class="text-xl font-bold text-[#0A749B]">
+                            @php
+                                $totalBauBau = $units->filter(function($unit) {
+                                    return str_contains($unit->name, 'Bau Bau') || 
+                                           str_contains($unit->name, 'Pasarwajo');
+                                })->sum(function($unit) {
+                                    return $unit->machines->sum(function($machine) {
+                                        return $machine->logs->first()->capable_power ?? 0;
+                                    });
+                                });
+                            @endphp
+                            {{ number_format($totalBauBau, 2) }} MW
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Total Daya Mampu PLTD Isolated -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">PLTD Isolated</h3>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">Total Daya Mampu:</span>
+                        <span class="text-xl font-bold text-[#0A749B]">
+                            @php
+                                $totalIsolated = $units->filter(function($unit) {
+                                    return str_contains($unit->name, 'Isolated');
+                                })->sum(function($unit) {
+                                    return $unit->machines->sum(function($machine) {
+                                        return $machine->logs->first()->capable_power ?? 0;
+                                    });
+                                });
+                            @endphp
+                            {{ number_format($totalIsolated, 2) }} MW
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Total Daya Mampu UP Kendari -->
+                <div class="bg-white rounded-lg shadow p-4">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">Total UP Kendari</h3>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-500">Total Daya Mampu:</span>
+                        <span class="text-xl font-bold text-[#0A749B]">
+                            @php
+                                $totalUPKendari = $units->sum(function($unit) {
+                                    return $unit->machines->sum(function($machine) {
+                                        return $machine->logs->first()->capable_power ?? 0;
+                                    });
+                                });
+                            @endphp
+                            {{ number_format($totalUPKendari, 2) }} MW
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Tambahkan filter di bawah header, sebelum content utama -->
         <div class="  p-4 mb-4">
@@ -96,7 +182,22 @@
                 <div class="bg-white shadow rounded-lg overflow-hidden">
                     <!-- Unit Header -->
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-lg font-semibold text-gray-900">{{ $unit->name }}</h2>
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-gray-900">{{ $unit->name }}</h2>
+                            <div class="flex items-center space-x-4">
+                                <div class="text-sm">
+                                    <span class="font-medium text-gray-500">HOP:</span>
+                                    <span class="ml-1 font-semibold {{ ($unit->latestHop?->hop_value ?? 0) > 3 ? 'text-green-600' : 'text-red-600' }}">
+                                        {{ $unit->latestHop?->hop_value ?? 0 }} Hari
+                                        @if(($unit->latestHop?->hop_value ?? 0) > 3)
+                                            (AMAN)
+                                        @else
+                                            (KRITIS)
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Unit's Machines Table -->
@@ -107,7 +208,6 @@
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">No</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Unit</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Mesin</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Daya Mampu SILM (MW)</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Daya Mampu Pasok (MW)</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-r border-gray-200">Beban (MW)</th>
@@ -122,7 +222,7 @@
                                             {{ $index + 1 }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap border-r border-gray-200">
-                                            <div class="text-sm font-medium text-gray-900 border-r border-gray-200">{{ $machine->name }}</div>
+                                            <div class="text-sm font-medium text-gray-900">{{ $machine->name }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 capable-power border-r border-gray-200">
                                             {{ $machine->logs->first() ? number_format($machine->logs->first()->capable_power ?? 0, 2) : '0.00' }}
@@ -256,8 +356,8 @@
                     content += `DMP: ${dmp.toFixed(2)} MW\n`;
                     content += `Beban: ${totalBeban.toFixed(2)} MW\n`;
 
-                    @if(isset($unit->hop))
-                        content += `HOP: ${{{ $unit->hop }}} Hari(AMAN)\n`;
+                    @if(isset($unit->latestHop))
+                        content += `HOP: ${{{ $unit->latestHop->hop_value }}} Hari(AMAN)\n`;
                     @endif
 
                     @if(str_contains(strtoupper($unit->name), 'PLTM'))

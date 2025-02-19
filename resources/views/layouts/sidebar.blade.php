@@ -11,7 +11,7 @@
 </div>
 
 <!-- Sidebar -->
-<aside class="fixed inset-y-0 left-0 z-30 transform transition-all duration-300 h-screen bg-transparent shadow-md text-white p-3"
+<aside class="fixed inset-y-0 left-0 z-30 transform transition-all duration-300 h-screen bg-transparent  text-white p-3"
        :class="{
            'w-[280px]': isSidebarOpen,
            'w-[80px]': !isSidebarOpen
@@ -97,7 +97,7 @@
                 <i class="fas fa-file-alt w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
                 <span class="text-base" x-show="isSidebarOpen">Reports</span>
             </a>
-
+            @if(auth()->user()->isSuperAdmin())
             <a href="{{ route('unit-mesin.index') }}" 
                class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
                :class="{ 
@@ -109,7 +109,7 @@
                 <i class="fas fa-industry w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
                 <span class="text-base" x-show="isSidebarOpen">Unit dan Mesin</span>
             </a>
-
+            @endif
            
 
             @if(auth()->user()->isSuperAdmin())

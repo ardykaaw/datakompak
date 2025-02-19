@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Unit;
+use App\Http\Controllers\LaporanKesiapanKitController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,4 +31,6 @@ Route::get('/machines/last-data', function () {
     return App\Models\Machine::with(['logs' => function($query) {
         $query->latest('input_time')->limit(1);
     }])->get();
-}); 
+});
+
+Route::post('/machines/last-data', [LaporanKesiapanKitController::class, 'getLastData'])->name('api.machines.last-data'); 
