@@ -25,4 +25,9 @@ class Machine extends Model
     {
         return $this->hasMany(IkhtisarHarian::class);
     }
+
+    public function logs()
+    {
+        return $this->hasMany(MachineLog::class);
+    }
 } 

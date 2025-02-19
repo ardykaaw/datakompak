@@ -67,6 +67,7 @@
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Daya Mampu Pasok (MW)</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Beban (MW)</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terakhir Update</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
@@ -79,26 +80,29 @@
                                             <div class="text-sm font-medium text-gray-900">{{ $machine->name }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($machine->capable_power ?? 0, 2) }}
+                                            {{ $machine->logs->first() ? number_format($machine->logs->first()->capable_power ?? 0, 2) : '0.00' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($machine->supply_power ?? 0, 2) }}
+                                            {{ $machine->logs->first() ? number_format($machine->logs->first()->supply_power ?? 0, 2) : '0.00' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {{ number_format($machine->current_load ?? 0, 2) }}
+                                            {{ $machine->logs->first() ? number_format($machine->logs->first()->current_load ?? 0, 2) : '0.00' }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                 {{
-                                                    $machine->status === 'OPS' ? 'bg-green-100 text-green-800' :
-                                                    ($machine->status === 'RSH' ? 'bg-yellow-100 text-yellow-800' :
-                                                    ($machine->status === 'FO' ? 'bg-red-100 text-red-800' :
-                                                    ($machine->status === 'MO' ? 'bg-orange-100 text-orange-800' :
-                                                    ($machine->status === 'PO' ? 'bg-blue-100 text-blue-800' :
+                                                    ($machine->logs->first()->status ?? '') === 'OPS' ? 'bg-green-100 text-green-800' :
+                                                    (($machine->logs->first()->status ?? '') === 'RSH' ? 'bg-yellow-100 text-yellow-800' :
+                                                    (($machine->logs->first()->status ?? '') === 'FO' ? 'bg-red-100 text-red-800' :
+                                                    (($machine->logs->first()->status ?? '') === 'MO' ? 'bg-orange-100 text-orange-800' :
+                                                    (($machine->logs->first()->status ?? '') === 'PO' ? 'bg-blue-100 text-blue-800' :
                                                     'bg-gray-100 text-gray-800'))))
                                                 }}">
-                                                {{ $machine->status ?? 'N/A' }}
+                                                {{ $machine->logs->first()->status ?? 'N/A' }}
                                             </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {{ $machine->logs->first() ? $machine->logs->first()->input_time->format('d/m/Y H:i') : '-' }}
                                         </td>
                                     </tr>
                                     @endforeach

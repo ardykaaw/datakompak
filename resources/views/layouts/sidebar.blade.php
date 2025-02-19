@@ -61,17 +61,17 @@
                 <i class="fas fa-chart-line w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
                 <span class="text-base" x-show="isSidebarOpen">Kinerja Pembangkit</span>
             </a>
-            <a href="{{ route('laporan-kesiapan-kit') }}" 
-            class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
-            :class="{ 
-                'justify-start': isSidebarOpen, 
-                'justify-center': !isSidebarOpen,
-                'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('laporan-kesiapan-kit') }},
-                'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('laporan-kesiapan-kit') }}
-            }">
-             <i class="fas fa-clipboard-check w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
-             <span class="text-base" x-show="isSidebarOpen">Laporan Kesiapan KIT</span>
-         </a>
+            <a href="{{ route('laporan-kesiapan-kit.index') }}" 
+               class="flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200"
+               :class="{ 
+                   'justify-start': isSidebarOpen, 
+                   'justify-center': !isSidebarOpen,
+                   'bg-white/10 text-white font-medium dark:bg-gray-700': {{ request()->routeIs('laporan-kesiapan-kit.*') }},
+                   'text-gray-100 hover:bg-white/10 dark:text-gray-200 dark:hover:bg-gray-700': !{{ request()->routeIs('laporan-kesiapan-kit.*') }}
+               }">
+                <i class="fas fa-clipboard-check w-6" :class="{ 'mr-3': isSidebarOpen }"></i>
+                <span class="text-base" x-show="isSidebarOpen">Laporan Kesiapan KIT</span>
+            </a>
             
 
             <a href="{{ route('analytics') }}" 

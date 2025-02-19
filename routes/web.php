@@ -95,10 +95,13 @@ Route::middleware([
         Route::get('/ikhtisar-harian-view', 'index')->name('ikhtisar-harian.view');
         Route::get('/ikhtisar-harian-export', 'export')->name('ikhtisar-harian.export');
     });
-    Route::get('/laporan-kesiapan-kit', [LaporanKesiapanKitController::class, 'index'])->name('laporan-kesiapan-kit');
-    Route::get('/laporan-kesiapan-kit/create', [LaporanKesiapanKitController::class, 'create'])->name('laporan-kesiapan-kit.create');
-    Route::post('/laporan-kesiapan-kit', [LaporanKesiapanKitController::class, 'store'])->name('laporan-kesiapan-kit.store');
-    
 
     Route::get('/kinerja-pembangkit', [KinerjaPembangkitController::class, 'index'])->name('kinerja-pembangkit.index');
+
+    // Laporan Kesiapan KIT Routes
+    Route::prefix('laporan-kesiapan-kit')->name('laporan-kesiapan-kit.')->group(function () {
+        Route::get('/', [LaporanKesiapanKitController::class, 'index'])->name('index');
+        Route::get('/create', [LaporanKesiapanKitController::class, 'create'])->name('create');
+        Route::post('/', [LaporanKesiapanKitController::class, 'store'])->name('store');
+    });
 }); 

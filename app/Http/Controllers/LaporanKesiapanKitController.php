@@ -4,13 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\Unit;
 use App\Models\Machine;
+use App\Models\MachineLog;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class LaporanKesiapanKitController extends Controller
 {
     public function index()
     {
-        $units = Unit::with('machines')->get();
+        $units = Unit::with(['machines' => function($query) {
+            $query->with(['logs' => function($query) {
+                $query->latest('input_time')->limit(1);
+            }]);    
+        }])->get();
+
+        // Transform data untuk menampilkan log terbaru
+        $units->each(function($unit) {
+            $unit->machines->each(function($machine) {
+                $latestLog = $machine->logs->first();
+                if ($latestLog) {
+                    $machine->capable_power = $latestLog->capable_power;
+                    $machine->supply_power = $latestLog->supply_power;
+                    $machine->current_load = $latestLog->current_load;
+                    $machine->status = $latestLog->status;
+                    $machine->last_update = $latestLog->input_time;
+                }
+            });
+        });
+
         return view('laporan-kesiapan-kit.index', compact('units'));
     }
 
@@ -24,22 +45,44 @@ class LaporanKesiapanKitController extends Controller
     {
         $request->validate([
             'input_time' => 'required',
-            'data' => 'required|array',
-            'data.*.capable_power' => 'required|numeric',
-            'data.*.supply_power' => 'required|numeric',
-            'data.*.current_load' => 'required|numeric',
-            'data.*.status' => 'required|in:OPS,RSH,FO,MO,PO',
+            'data' => 'array',
+            'data.*.capable_power' => 'nullable|numeric',
+            'data.*.supply_power' => 'nullable|numeric',
+            'data.*.current_load' => 'nullable|numeric',
+            'data.*.status' => 'nullable|in:OPS,RSH,FO,MO,PO',
         ]);
 
-        // Store the data for each machine
-        foreach ($request->data as $machineId => $data) {
-            Machine::where('id', $machineId)->update([
-                'capable_power' => $data['capable_power'],
-                'supply_power' => $data['supply_power'],
-                'current_load' => $data['current_load'],
-                'status' => $data['status'],
-                'last_update' => $request->input_time,
-            ]);
+        $inputTime = Carbon::parse($request->input_time);
+
+        // Store the data only for machines that have any data entered
+        foreach ($request->data ?? [] as $machineId => $data) {
+            // Check if any field has data
+            if (!empty($data['capable_power']) || 
+                !empty($data['supply_power']) || 
+                !empty($data['current_load']) || 
+                !empty($data['status'])) {
+                
+                $machine = Machine::find($machineId);
+                
+                MachineLog::create([
+                    'machine_id' => $machineId,
+                    'unit_id' => $machine->unit_id,
+                    'capable_power' => $data['capable_power'] ?? null,
+                    'supply_power' => $data['supply_power'] ?? null,
+                    'current_load' => $data['current_load'] ?? null,
+                    'status' => $data['status'] ?? null,
+                    'input_time' => $inputTime,
+                ]);
+
+                // Update the latest status in machines table
+                $machine->update([
+                    'capable_power' => $data['capable_power'] ?? null,
+                    'supply_power' => $data['supply_power'] ?? null,
+                    'current_load' => $data['current_load'] ?? null,
+                    'status' => $data['status'] ?? null,
+                    'last_update' => $inputTime,
+                ]);
+            }
         }
 
         return redirect()->route('laporan-kesiapan-kit.index')
