@@ -13,21 +13,43 @@ use Illuminate\Support\Facades\Log;
 
 class LaporanKesiapanKitController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $units = Unit::with(['machines' => function($query) {
-            $query->with(['logs' => function($query) {
-                if (request()->has('input_time')) {
-                    $query->whereTime('input_time', request('input_time'));
+        // Define fixed available times
+        $availableTimes = collect([
+            '06:00' => '06:00 (Pagi)',
+            '11:00' => '11:00 (Siang)',
+            '14:00' => '14:00 (Siang)',
+            '18:00' => '18:00 (Malam)',
+            '19:00' => '19:00 (Malam)'
+        ]);
+
+        $selectedTime = $request->input('input_time');
+        
+        $units = Unit::with(['machines' => function($query) use ($selectedTime) {
+            $query->with(['logs' => function($query) use ($selectedTime) {
+                if ($selectedTime) {
+                    // Convert time to Carbon instance for today
+                    $filterTime = Carbon::createFromFormat('H:i', $selectedTime)->format('H:i:s');
+                    $query->whereRaw('TIME(input_time) = ?', [$filterTime]);
                 }
                 $query->latest('input_time')->limit(1);
             }]);    
-        }])->get();
+        }])
+        ->with(['latestHop' => function($query) use ($selectedTime) {
+            if ($selectedTime) {
+                // Convert time to Carbon instance for today
+                $filterTime = Carbon::createFromFormat('H:i', $selectedTime)->format('H:i:s');
+                $query->whereRaw('TIME(input_time) = ?', [$filterTime]);
+            }
+            $query->latest('input_time');
+        }])
+        ->get();
 
         // Transform data untuk menampilkan log terbaru
-        $units->each(function($unit) {
+        $units->each(function($unit) use ($selectedTime) {
             // Load latest HOP data
-            $latestHop = UnitHop::getLatestHop($unit->id);
+            $latestHop = UnitHop::getLatestHop($unit->id, $selectedTime);
             $unit->hop = $latestHop ? $latestHop->hop_value : null;
             
             $unit->machines->each(function($machine) {
@@ -42,7 +64,16 @@ class LaporanKesiapanKitController extends Controller
             });
         });
 
-        return view('laporan-kesiapan-kit.index', compact('units'));
+        // Debug log untuk memeriksa query
+        Log::info('Filter Time:', [
+            'selected_time' => $selectedTime,
+            'units_count' => $units->count(),
+            'machines_with_logs' => $units->pluck('machines')->flatten()->filter(function($machine) {
+                return $machine->logs->isNotEmpty();
+            })->count()
+        ]);
+
+        return view('laporan-kesiapan-kit.index', compact('units', 'availableTimes'));
     }
 
     public function create()

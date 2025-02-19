@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class UnitHop extends Model
 {
@@ -33,10 +34,15 @@ class UnitHop extends Model
     /**
      * Get the latest HOP value for a specific unit
      */
-    public static function getLatestHop($unitId)
+    public static function getLatestHop($unitId, $inputTime = null)
     {
-        return static::where('unit_id', $unitId)
-            ->latest('input_time')
-            ->first();
+        $query = static::where('unit_id', $unitId);
+        
+        if ($inputTime) {
+            $filterTime = Carbon::createFromFormat('H:i', $inputTime)->format('H:i:s');
+            $query->whereRaw('TIME(input_time) = ?', [$filterTime]);
+        }
+        
+        return $query->latest('input_time')->first();
     }
 } 

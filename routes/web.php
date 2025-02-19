@@ -113,4 +113,6 @@ Route::middleware([
 
     Route::get('/api/machine-logs', [LaporanKesiapanKitController::class, 'getByInputTime'])
          ->name('api.machine-logs');
+
+    Route::get('/laporan-kesiapan-kit/pdf', [LaporanKesiapanKitController::class, 'exportPDF'])->name('laporan-kesiapan-kit.pdf');
 }); 
