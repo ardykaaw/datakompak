@@ -9,6 +9,11 @@ function number_format(number, decimals = 2) {
     return parseFloat(number).toFixed(decimals);
 }
 
+// Tambahkan fungsi untuk mendapatkan base URL yang benar
+function getBaseUrl() {
+    return window.location.origin + (window.location.pathname.includes('/public') ? '/public' : '');
+}
+
 // Define functions in global scope
 window.generateFormattedText = function() {
     const now = new Date();
@@ -87,6 +92,63 @@ window.copyFormattedText = function() {
             text: 'Terjadi kesalahan saat menyalin teks'
         });
     }
+};
+
+// Modifikasi fungsi fetch data
+window.refreshLastData = function() {
+    const inputTime = document.getElementById('input_time').value;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    // Show loading indicator
+    Swal.fire({
+        title: 'Memuat Data...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // Debug log
+    console.log('Fetching data with input time:', inputTime);
+
+    // Gunakan base URL yang benar
+    const apiUrl = `${getBaseUrl()}/api/machines/last-data`;
+    
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            input_time: inputTime
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            // Update data berhasil
+            updateTableData(data);
+            Swal.close();
+        } else {
+            throw new Error(data.message || 'Terjadi kesalahan pada server');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Terjadi kesalahan saat mengambil data: ' + error.message,
+            confirmButtonText: 'Tutup'
+        });
+    });
 };
 
 // Add event listener when document is ready

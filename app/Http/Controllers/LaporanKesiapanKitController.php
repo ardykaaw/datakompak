@@ -181,46 +181,69 @@ class LaporanKesiapanKitController extends Controller
         try {
             Log::info('getLastData called with input time: ' . $request->input_time);
 
-            // Get latest machine logs
+            // Validasi input
+            $request->validate([
+                'input_time' => 'nullable|date_format:H:i'
+            ]);
+
+            // Get latest machine logs with error handling
             $machineLogs = MachineLog::with('machine')
                 ->when($request->input_time, function($query, $time) {
                     return $query->whereTime('input_time', $time);
                 })
                 ->latest('input_time')
-                ->get()
-                ->groupBy('machine_id')
+                ->get();
+
+            if ($machineLogs->isEmpty()) {
+                Log::warning('No machine logs found');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Data tidak ditemukan'
+                ], 404);
+            }
+
+            $groupedLogs = $machineLogs->groupBy('machine_id')
                 ->map(function($logs) {
                     return $logs->first();
                 });
 
-            // Get latest HOP data
+            // Get latest HOP data with error handling
             $hopData = UnitHop::when($request->input_time, function($query, $time) {
                     return $query->whereTime('input_time', $time);
                 })
                 ->latest('input_time')
-                ->get()
-                ->groupBy('unit_id')
+                ->get();
+
+            if ($hopData->isEmpty()) {
+                Log::warning('No HOP data found');
+            }
+
+            $groupedHops = $hopData->groupBy('unit_id')
                 ->map(function($hops) {
                     return $hops->first();
                 });
 
-            Log::info('Data retrieved', [
-                'machines_count' => $machineLogs->count(),
-                'hops_count' => $hopData->count()
+            Log::info('Data retrieved successfully', [
+                'machines_count' => $groupedLogs->count(),
+                'hops_count' => $groupedHops->count()
             ]);
 
             return response()->json([
-                'machines' => $machineLogs->values(),
-                'hops' => $hopData->values(),
+                'machines' => $groupedLogs->values(),
+                'hops' => $groupedHops->values(),
                 'status' => 'success'
             ]);
+
         } catch (\Exception $e) {
-            Log::error('Error in getLastData: ' . $e->getMessage());
+            Log::error('Error in getLastData: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
             
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terjadi kesalahan saat mengambil data',
-                'error' => $e->getMessage()
+                'message' => 'Terjadi kesalahan saat mengambil data: ' . $e->getMessage()
             ], 500);
         }
     }
