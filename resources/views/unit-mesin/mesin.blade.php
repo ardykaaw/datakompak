@@ -167,62 +167,105 @@
                             </div>
                         </div>
 
+                        <!-- Table Container -->
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <!-- Table Search and Actions -->
+                            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                                <div class="flex items-center space-x-2">
+                                    <div class="relative">
+                                        <input type="text" 
+                                               id="tableSearch" 
+                                               class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                               placeholder="Cari mesin...">
+                                        <div class="absolute left-3 top-2.5 text-gray-400">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         <!-- Table -->
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Mesin</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unit</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kode</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spesifikasi</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DMN</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DMP</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @php $totalMachines = 0; @endphp
-                                    @foreach($units as $unit)
-                                        @foreach($unit->machines as $machine)
-                                            @php $totalMachines++; @endphp
-                                            <tr class="hover:bg-gray-50">
-                                                <td class="px-6 py-4 whitespace-nowrap">
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr class="bg-[#0A749B] dark:bg-gray-800">
+                                            <th class="px-6 py-4 text-left text-xs font-medium tracking-wider text-white uppercase w-20">No</th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium tracking-wider text-white uppercase">
+                                                <div class="flex items-center space-x-1 cursor-pointer">
+                                                    <span>Nama Mesin</span>
+                                                    <i class="fas fa-sort"></i>
+                                                </div>
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                                <div class="flex items-center space-x-1 cursor-pointer">
+                                                    <span>Unit</span>
+                                                    <i class="fas fa-sort"></i>
+                                                </div>
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Kode</th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Spesifikasi</th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">DMN</th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">DMP</th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-4 text-right text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @forelse($machines as $index => $machine)
+                                            <tr class="hover:bg-gray-50 transition-colors duration-200 bg-white">
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white text-sm text-gray-500">
+                                                    {{ ($machines->currentPage() - 1) * $machines->perPage() + $index + 1 }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                            <i class="fas fa-cog text-blue-500"></i>
+                                                        </div>
+                                                        <div class="ml-4">
                                                     <div class="text-sm font-medium text-gray-900">{{ $machine->name }}</div>
+                                                        </div>
+                                                    </div>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="text-sm text-gray-900">{{ $unit->name }}</div>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="text-sm text-gray-900">{{ $machine->code ?: '-' }}</div>
-                                                </td>
-                                                <td class="px-6 py-4">
-                                                    <div class="text-sm text-gray-900">{{ $machine->specifications ?: '-' }}</div>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="text-sm text-gray-900">{{ number_format($machine->dmn, 2) ?: '-' }}</div>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <div class="text-sm text-gray-900">{{ number_format($machine->dmp, 2) ?: '-' }}</div>
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap">
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                        Aktif
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-medium bg-blue-50 text-blue-700 rounded-full">
+                                                        {{ $machine->unit->name }}
                                                     </span>
                                                 </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <div class="flex justify-end space-x-2">
-                                                        <a href="{{ route('unit-mesin.machines.edit', [$unit, $machine]) }}" 
-                                                           class="text-blue-600 hover:text-blue-900">
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <div class="text-sm text-gray-900">{{ $machine->code ?: '-' }}</div>
+                                                </td>
+                                                <td class="px-6 py-4 bg-white">
+                                                    <div class="text-sm text-gray-900 max-w-xs truncate" title="{{ $machine->specifications }}">
+                                                        {{ $machine->specifications ?: '-' }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <div class="text-sm font-medium {{ $machine->dmn >= 90 ? 'text-green-600' : ($machine->dmn >= 70 ? 'text-yellow-600' : 'text-red-600') }}">
+                                                        {{ number_format($machine->dmn, 2) ?: '-' }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <div class="text-sm font-medium {{ $machine->dmp >= 90 ? 'text-green-600' : ($machine->dmp >= 70 ? 'text-yellow-600' : 'text-red-600') }}">
+                                                        {{ number_format($machine->dmp, 2) ?: '-' }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                        <i class="fas fa-circle text-xs mr-1 mt-1"></i> Aktif
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium bg-white">
+                                                    <div class="flex justify-end space-x-3">
+                                                        <a href="{{ route('unit-mesin.machines.edit', [$machine->unit, $machine]) }}" 
+                                                           class="text-blue-600 hover:text-blue-900 bg-blue-50 p-2 rounded-lg transition-colors duration-200">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <button onclick="confirmDelete({{ $unit->id }}, {{ $machine->id }}, '{{ $machine->name }}')" 
-                                                                class="text-red-600 hover:text-red-900">
+                                                        <button onclick="confirmDelete({{ $machine->unit->id }}, {{ $machine->id }}, '{{ $machine->name }}')" 
+                                                                class="text-red-600 hover:text-red-900 bg-red-50 p-2 rounded-lg transition-colors duration-200">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
-                                                        <form id="delete-form-{{ $unit->id }}-{{ $machine->id }}" 
-                                                              action="{{ route('unit-mesin.machines.destroy', [$unit, $machine]) }}" 
+                                                        <form id="delete-form-{{ $machine->unit->id }}-{{ $machine->id }}" 
+                                                              action="{{ route('unit-mesin.machines.destroy', [$machine->unit, $machine]) }}" 
                                                               method="POST" 
                                                               class="hidden">
                                                             @csrf
@@ -231,20 +274,146 @@
                                                     </div>
                                                 </td>
                                             </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="8" class="px-6 py-8 text-center">
+                                                    <div class="max-w-sm mx-auto">
+                                                        <div class="bg-gray-50 rounded-lg p-6">
+                                                            <div class="text-center">
+                                                                <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+                                                                <p class="text-lg font-medium text-gray-900 mb-1">Belum ada mesin</p>
+                                                                <p class="text-sm text-gray-500 mb-4">Mulai dengan menambahkan mesin baru ke sistem</p>
+                                                                <button onclick="Swal.fire({
+                                                                    title: 'Tambah Mesin Baru',
+                                                                    html: `
+                                                                        <form id='addMachineForm' class='space-y-4'>
+                                                                            <select id='unitSelect' class='w-full px-3 py-2 border rounded-lg'>
+                                                                                <option value=''>Pilih Unit</option>
+                                                                                @foreach($units as $unit)
+                                                                                    <option value='{{ $unit->id }}'>{{ $unit->name }}</option>
                                         @endforeach
-                                    @endforeach
+                                                                            </select>
+                                                                            <input type='text' id='machineName' class='w-full px-3 py-2 border rounded-lg' placeholder='Nama Mesin'>
+                                                                            <input type='text' id='machineCode' class='w-full px-3 py-2 border rounded-lg' placeholder='Kode Mesin'>
+                                                                            <textarea id='machineSpecs' class='w-full px-3 py-2 border rounded-lg' placeholder='Spesifikasi'></textarea>
+                                                                        </form>
+                                                                    `,
+                                                                    showCancelButton: true,
+                                                                    confirmButtonText: 'Simpan',
+                                                                    cancelButtonText: 'Batal',
+                                                                    confirmButtonColor: '#3B82F6',
+                                                                    preConfirm: () => {
+                                                                        const unitId = document.getElementById('unitSelect').value;
+                                                                        if (!unitId) {
+                                                                            Swal.showValidationMessage('Silakan pilih unit');
+                                                                            return false;
+                                                                        }
+                                                                        
+                                                                        const form = document.createElement('form');
+                                                                        form.method = 'POST';
+                                                                        form.action = `/unit-mesin/${unitId}/machines`;
+                                                                        
+                                                                        const csrf = document.createElement('input');
+                                                                        csrf.type = 'hidden';
+                                                                        csrf.name = '_token';
+                                                                        csrf.value = '{{ csrf_token() }}';
+                                                                        
+                                                                        const name = document.createElement('input');
+                                                                        name.type = 'hidden';
+                                                                        name.name = 'name';
+                                                                        name.value = document.getElementById('machineName').value;
+                                                                        
+                                                                        const code = document.createElement('input');
+                                                                        code.type = 'hidden';
+                                                                        code.name = 'code';
+                                                                        code.value = document.getElementById('machineCode').value;
+                                                                        
+                                                                        const specs = document.createElement('input');
+                                                                        specs.type = 'hidden';
+                                                                        specs.name = 'specifications';
+                                                                        specs.value = document.getElementById('machineSpecs').value;
+                                                                        
+                                                                        form.appendChild(csrf);
+                                                                        form.appendChild(name);
+                                                                        form.appendChild(code);
+                                                                        form.appendChild(specs);
+                                                                        
+                                                                        document.body.appendChild(form);
+                                                                        form.submit();
+                                                                    }
+                                                                })" 
+                                                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                                                    <i class="fas fa-plus mr-2"></i>
+                                                                    Tambah Mesin
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
                                 </tbody>
                             </table>
+                            </div>
 
-                            @if($totalMachines === 0)
-                                <div class="text-center py-8">
-                                    <div class="text-gray-500">
-                                        <i class="fas fa-inbox text-4xl mb-4"></i>
-                                        <p class="text-lg">Belum ada mesin yang ditambahkan</p>
-                                        <p class="text-sm">Klik tombol "Tambah Mesin" untuk menambahkan mesin baru</p>
+                            <!-- Pagination -->
+                            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm text-gray-700">
+                                        Menampilkan
+                                        <span class="font-medium">{{ $machines->firstItem() ?? 0 }}</span>
+                                        sampai
+                                        <span class="font-medium">{{ $machines->lastItem() ?? 0 }}</span>
+                                        dari
+                                        <span class="font-medium">{{ $machines->total() }}</span>
+                                        data
+                                    </div>
+                                    <div>
+                                        @if ($machines->hasPages())
+                                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                                {{-- Previous Page Link --}}
+                                                @if ($machines->onFirstPage())
+                                                    <span class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 cursor-default rounded-l-md">
+                                                        <i class="fas fa-chevron-left text-xs mr-1"></i>
+                                                        Sebelumnya
+                                                    </span>
+                                                @else
+                                                    <a href="{{ $machines->previousPageUrl() }}" class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-blue-50 hover:text-blue-700">
+                                                        <i class="fas fa-chevron-left text-xs mr-1"></i>
+                                                        Sebelumnya
+                                                    </a>
+                                                @endif
+
+                                                {{-- Pagination Elements --}}
+                                                @foreach ($machines->getUrlRange(max($machines->currentPage() - 2, 1), min($machines->currentPage() + 2, $machines->lastPage())) as $page => $url)
+                                                    @if ($page == $machines->currentPage())
+                                                        <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600">
+                                                            {{ $page }}
+                                                        </span>
+                                                    @else
+                                                        <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-700">
+                                                            {{ $page }}
+                                                        </a>
+                                                    @endif
+                                                @endforeach
+
+                                                {{-- Next Page Link --}}
+                                                @if ($machines->hasMorePages())
+                                                    <a href="{{ $machines->nextPageUrl() }}" class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-blue-50 hover:text-blue-700">
+                                                        Selanjutnya
+                                                        <i class="fas fa-chevron-right text-xs ml-1"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 cursor-default rounded-r-md">
+                                                        Selanjutnya
+                                                        <i class="fas fa-chevron-right text-xs ml-1"></i>
+                                                    </span>
+                                                @endif
+                                            </nav>
+                                        @endif
                                     </div>
                                 </div>
-                            @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -271,5 +440,27 @@ function confirmDelete(unitId, machineId, machineName) {
         }
     });
 }
+
+// Search functionality
+let searchTimer;
+const searchInput = document.getElementById('tableSearch');
+const tbody = document.querySelector('tbody');
+
+searchInput.addEventListener('input', function(e) {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        const searchValue = e.target.value;
+        
+        fetch(`{{ route('unit-mesin.mesin') }}?search=${searchValue}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            tbody.innerHTML = html;
+        });
+    }, 300);
+});
 </script>
 @endsection

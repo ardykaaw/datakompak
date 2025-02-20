@@ -88,15 +88,49 @@ class UnitMachineController extends Controller
         return back()->with('success', 'Mesin berhasil dihapus.');
     }
 
-    public function mesinIndex()
+    public function mesinIndex(Request $request)
     {
-        $units = Unit::with('machines')->get();
-        return view('unit-mesin.mesin', compact('units'));
+        $search = $request->input('search');
+        
+        $units = Unit::with(['machines' => function($query) {
+            $query->orderBy('name');
+        }])->get();
+        
+        // Get all machines paginated with search
+        $machines = Machine::with('unit')
+            ->when($search, function($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('code', 'like', "%{$search}%")
+                    ->orWhereHas('unit', function($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%");
+                    });
+            })
+            ->orderBy('name')
+            ->paginate(10);
+            
+        if($request->ajax()) {
+            return view('unit-mesin.partials.machine-table', compact('machines'))->render();
+        }
+            
+        return view('unit-mesin.mesin', compact('units', 'machines'));
     }
 
-    public function unitIndex()
+    public function unitIndex(Request $request)
     {
-        $units = Unit::with('machines')->get();
+        $search = $request->input('search');
+        
+        $units = Unit::with('machines')
+            ->when($search, function($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            })
+            ->orderBy('name')
+            ->paginate(10);
+
+        if($request->ajax()) {
+            return view('unit-mesin.partials.unit-table', compact('units'))->render();
+        }
+            
         return view('unit-mesin.unit', compact('units'));
     }
 

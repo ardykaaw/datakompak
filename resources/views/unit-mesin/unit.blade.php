@@ -109,72 +109,171 @@
                             </div>
                         </div>
 
-                        <!-- Table -->
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Unit</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deskripsi</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Mesin</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @forelse($units as $unit)
-                                        <tr class="hover:bg-gray-50">
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">
-                                                    <a href="{{ route('unit-mesin.show', $unit) }}" class="hover:text-blue-500">
-                                                        {{ $unit->name }}
-                                                    </a>
+                        <!-- Table Container -->
+                        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                            <!-- Table Search and Actions -->
+                            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                                <div class="flex items-center space-x-2">
+                                    <div class="relative">
+                                        <input type="text" 
+                                               id="tableSearch" 
+                                               class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                               placeholder="Cari unit...">
+                                        <div class="absolute left-3 top-2.5 text-gray-400">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Table -->
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead>
+                                        <tr class="bg-[#0A749B] dark:bg-gray-800">
+                                            <th class="px-6 py-4 text-left text-xs font-medium tracking-wider text-white uppercase w-20">No</th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium tracking-wider text-white uppercase">
+                                                <div class="flex items-center space-x-1 cursor-pointer">
+                                                    <span>Nama Unit</span>
+                                                    <i class="fas fa-sort"></i>
                                                 </div>
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <div class="text-sm text-gray-900">{{ $unit->description ?: '-' }}</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-900">{{ $unit->machines->count() }} Mesin</div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Aktif
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <div class="flex justify-end space-x-2">
-                                                    <a href="{{ route('unit-mesin.edit', $unit) }}" 
-                                                       class="text-blue-600 hover:text-blue-900">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <button onclick="confirmDelete({{ $unit->id }}, '{{ $unit->name }}')" 
-                                                            class="text-red-600 hover:text-red-900">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                    <form id="delete-form-{{ $unit->id }}" 
-                                                          action="{{ route('unit-mesin.destroy', $unit) }}" 
-                                                          method="POST" 
-                                                          class="hidden">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                    </form>
-                                                </div>
-                                            </td>
+                                            </th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Deskripsi</th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Jumlah Mesin</th>
+                                            <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-4 text-right text-xs font-medium text-white uppercase tracking-wider">Aksi</th>
                                         </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="px-6 py-4 text-center">
-                                                <div class="text-gray-500">
-                                                    <i class="fas fa-inbox text-4xl mb-4"></i>
-                                                    <p class="text-lg">Belum ada unit yang ditambahkan</p>
-                                                    <p class="text-sm">Klik tombol "Tambah Unit" untuk menambahkan unit baru</p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        @forelse($units as $index => $unit)
+                                            <tr class="hover:bg-gray-50 transition-colors duration-200 bg-white">
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white text-sm text-gray-500">
+                                                    {{ ($units->currentPage() - 1) * $units->perPage() + $index + 1 }}
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <div class="flex items-center">
+                                                        <div class="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                            <i class="fas fa-industry text-blue-500"></i>
+                                                        </div>
+                                                        <div class="ml-4">
+                                                            <div class="text-sm font-medium text-gray-900">
+                                                                <a href="{{ route('unit-mesin.show', $unit) }}" class="hover:text-blue-500">
+                                                                    {{ $unit->name }}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 bg-white">
+                                                    <div class="text-sm text-gray-900 max-w-xs truncate" title="{{ $unit->description }}">
+                                                        {{ $unit->description ?: '-' }}
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-medium bg-blue-50 text-blue-700 rounded-full">
+                                                        {{ $unit->machines->count() }} Mesin
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap bg-white">
+                                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                        <i class="fas fa-circle text-xs mr-1 mt-1"></i> Aktif
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium bg-white">
+                                                    <div class="flex justify-end space-x-3">
+                                                        <a href="{{ route('unit-mesin.edit', $unit) }}" 
+                                                           class="text-blue-600 hover:text-blue-900 bg-blue-50 p-2 rounded-lg transition-colors duration-200">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <button onclick="confirmDelete({{ $unit->id }}, '{{ $unit->name }}')" 
+                                                                class="text-red-600 hover:text-red-900 bg-red-50 p-2 rounded-lg transition-colors duration-200">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="px-6 py-8 text-center">
+                                                    <div class="max-w-sm mx-auto">
+                                                        <div class="bg-gray-50 rounded-lg p-6">
+                                                            <div class="text-center">
+                                                                <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+                                                                <p class="text-lg font-medium text-gray-900 mb-1">Belum ada unit</p>
+                                                                <p class="text-sm text-gray-500 mb-4">Mulai dengan menambahkan unit baru ke sistem</p>
+                                                                <a href="{{ route('unit-mesin.create') }}" 
+                                                                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                                                    <i class="fas fa-plus mr-2"></i>
+                                                                    Tambah Unit
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm text-gray-700">
+                                        Menampilkan
+                                        <span class="font-medium">{{ $units->firstItem() ?? 0 }}</span>
+                                        sampai
+                                        <span class="font-medium">{{ $units->lastItem() ?? 0 }}</span>
+                                        dari
+                                        <span class="font-medium">{{ $units->total() }}</span>
+                                        data
+                                    </div>
+                                    <div>
+                                        @if ($units->hasPages())
+                                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                                {{-- Previous Page Link --}}
+                                                @if ($units->onFirstPage())
+                                                    <span class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 cursor-default rounded-l-md">
+                                                        <i class="fas fa-chevron-left text-xs mr-1"></i>
+                                                        Sebelumnya
+                                                    </span>
+                                                @else
+                                                    <a href="{{ $units->previousPageUrl() }}" class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-l-md hover:bg-blue-50 hover:text-blue-700">
+                                                        <i class="fas fa-chevron-left text-xs mr-1"></i>
+                                                        Sebelumnya
+                                                    </a>
+                                                @endif
+
+                                                {{-- Pagination Elements --}}
+                                                @foreach ($units->getUrlRange(max($units->currentPage() - 2, 1), min($units->currentPage() + 2, $units->lastPage())) as $page => $url)
+                                                    @if ($page == $units->currentPage())
+                                                        <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600">
+                                                            {{ $page }}
+                                                        </span>
+                                                    @else
+                                                        <a href="{{ $url }}" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 hover:bg-blue-50 hover:text-blue-700">
+                                                            {{ $page }}
+                                                        </a>
+                                                    @endif
+                                                @endforeach
+
+                                                {{-- Next Page Link --}}
+                                                @if ($units->hasMorePages())
+                                                    <a href="{{ $units->nextPageUrl() }}" class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-r-md hover:bg-blue-50 hover:text-blue-700">
+                                                        Selanjutnya
+                                                        <i class="fas fa-chevron-right text-xs ml-1"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="relative inline-flex items-center px-3 py-2 text-sm font-medium text-gray-400 bg-white border border-gray-300 cursor-default rounded-r-md">
+                                                        Selanjutnya
+                                                        <i class="fas fa-chevron-right text-xs ml-1"></i>
+                                                    </span>
+                                                @endif
+                                            </nav>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -201,5 +300,27 @@ function confirmDelete(unitId, unitName) {
         }
     });
 }
+
+// Search functionality
+let searchTimer;
+const searchInput = document.getElementById('tableSearch');
+const tbody = document.querySelector('tbody');
+
+searchInput.addEventListener('input', function(e) {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        const searchValue = e.target.value;
+        
+        fetch(`{{ route('unit-mesin.unit') }}?search=${searchValue}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            tbody.innerHTML = html;
+        });
+    }, 300);
+});
 </script>
 @endsection
