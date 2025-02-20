@@ -8,6 +8,10 @@
 window.refreshLastData = function() {
     const inputTime = document.getElementById('input_time').value;
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+    // Get base URL
+    const baseUrl = window.location.origin + (window.location.pathname.includes('/public') ? '/public' : '');
+    const apiUrl = `${baseUrl}/api/machines/last-data`;
 
     // Show loading indicator
     Swal.fire({
@@ -19,9 +23,11 @@ window.refreshLastData = function() {
     });
 
     // Debug log
-    console.log('Fetching data with input time:', inputTime);
+    console.log('Request URL:', apiUrl);
+    console.log('Input time:', inputTime);
+    console.log('CSRF Token:', csrfToken ? 'Present' : 'Missing');
 
-    fetch('/api/machines/last-data', {
+    fetch(apiUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -34,10 +40,21 @@ window.refreshLastData = function() {
     })
     .then(response => {
         console.log('Response status:', response.status);
+        console.log('Response headers:', [...response.headers.entries()]);
+        
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP Error: ${response.status}\nResponse: ${text}`);
+            });
+        }
         return response.json();
     })
     .then(data => {
         console.log('Received data:', data);
+
+        if (data.status === 'error') {
+            throw new Error(data.message || 'Unknown error occurred');
+        }
 
         if (data.machines) {
             // Update machine data
@@ -55,6 +72,7 @@ window.refreshLastData = function() {
                     if (statusSelect) statusSelect.value = log.status || '';
                 } catch (err) {
                     console.error('Error updating machine:', log.machine_id, err);
+                    throw new Error(`Error updating machine ${log.machine_id}: ${err.message}`);
                 }
             });
         }
@@ -69,11 +87,12 @@ window.refreshLastData = function() {
                     }
                 } catch (err) {
                     console.error('Error updating HOP:', hop.unit_id, err);
+                    throw new Error(`Error updating HOP ${hop.unit_id}: ${err.message}`);
                 }
             });
         }
 
-        // Close loading indicator and show success message
+        // Show success message
         Swal.fire({
             icon: 'success',
             title: 'Data berhasil diperbarui',
@@ -82,18 +101,39 @@ window.refreshLastData = function() {
         });
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Error details:', error);
+        
+        // Show detailed error message
         Swal.fire({
             icon: 'error',
-            title: 'Oops...',
-            text: 'Terjadi kesalahan saat mengambil data'
+            title: 'Terjadi Kesalahan',
+            html: `
+                <div class="text-left">
+                    <p class="font-semibold">Detail Error:</p>
+                    <p class="text-sm text-red-600 mt-2">${error.message}</p>
+                    <p class="text-xs text-gray-500 mt-2">URL: ${apiUrl}</p>
+                    <p class="text-xs text-gray-500">Time: ${new Date().toLocaleString()}</p>
+                </div>
+            `,
+            confirmButtonText: 'Tutup',
+            showCancelButton: true,
+            cancelButtonText: 'Lihat Console',
+            cancelButtonColor: '#718096'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                console.log('Full error details:', error);
+            }
         });
     });
 };
 
-// Add event listener when document is ready
+// Add event listener for debugging
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Content Loaded');
+    console.log('Page loaded. Available endpoints:', {
+        baseUrl: window.location.origin,
+        fullPath: window.location.href,
+        apiEndpoint: window.location.origin + (window.location.pathname.includes('/public') ? '/public' : '') + '/api/machines/last-data'
+    });
 });
 </script>
 @endpush
