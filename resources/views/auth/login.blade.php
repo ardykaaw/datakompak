@@ -22,6 +22,22 @@
             @csrf
             <div class="space-y-4">
                 <div class="group">
+                    <label for="unit" class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                    <div class="flex items-center bg-gray-50 rounded-lg border-2 border-gray-200 group-hover:border-blue-500 transition-all duration-300">
+                        <div class="p-3 bg-gray-100 rounded-l-lg border-r border-gray-200">
+                            <i class="fas fa-building text-lg text-blue-600"></i>
+                        </div>
+                        <select id="unit" name="unit" required 
+                            class="block w-full px-4 py-3 bg-gray-50 border-0 focus:ring-0 focus:outline-none rounded-r-lg text-gray-900">
+                            <option value="">Pilih Unit</option>
+                            @foreach($units as $unit)
+                                <option value="{{ $unit->id }}">{{ $unit->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="group">
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
                     <div class="flex items-center bg-gray-50 rounded-lg border-2 border-gray-200 group-hover:border-blue-500 transition-all duration-300">
                         <div class="p-3 bg-gray-100 rounded-l-lg border-r border-gray-200">

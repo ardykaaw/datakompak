@@ -40,4 +40,14 @@ class Unit extends Model
         return $this->hasOne(UnitHop::class)
             ->latest('input_time');
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function getConnectionName()
+    {
+        return session('db_connection', 'mysql');
+    }
 } 

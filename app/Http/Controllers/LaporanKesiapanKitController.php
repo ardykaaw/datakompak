@@ -25,20 +25,21 @@ class LaporanKesiapanKitController extends Controller
         ]);
 
         $selectedTime = $request->input('input_time');
+        $selectedDate = $request->input('input_date') ? Carbon::parse($request->input('input_date')) : Carbon::today();
         
-        $units = Unit::with(['machines' => function($query) use ($selectedTime) {
-            $query->with(['logs' => function($query) use ($selectedTime) {
+        $units = Unit::with(['machines' => function($query) use ($selectedTime, $selectedDate) {
+            $query->with(['logs' => function($query) use ($selectedTime, $selectedDate) {
+                $query->whereDate('input_time', $selectedDate);
                 if ($selectedTime) {
-                    // Convert time to Carbon instance for today
                     $filterTime = Carbon::createFromFormat('H:i', $selectedTime)->format('H:i:s');
                     $query->whereRaw('TIME(input_time) = ?', [$filterTime]);
                 }
                 $query->latest('input_time')->limit(1);
             }]);    
         }])
-        ->with(['latestHop' => function($query) use ($selectedTime) {
+        ->with(['latestHop' => function($query) use ($selectedTime, $selectedDate) {
+            $query->whereDate('input_time', $selectedDate);
             if ($selectedTime) {
-                // Convert time to Carbon instance for today
                 $filterTime = Carbon::createFromFormat('H:i', $selectedTime)->format('H:i:s');
                 $query->whereRaw('TIME(input_time) = ?', [$filterTime]);
             }
@@ -73,7 +74,7 @@ class LaporanKesiapanKitController extends Controller
             })->count()
         ]);
 
-        return view('laporan-kesiapan-kit.index', compact('units', 'availableTimes'));
+        return view('laporan-kesiapan-kit.index', compact('units', 'availableTimes', 'selectedDate'));
     }
 
     public function create()

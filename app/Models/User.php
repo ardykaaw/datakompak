@@ -87,4 +87,15 @@ class User extends Authenticatable
     {
         return $this->hasRole('admin');
     }
+
+    public function getConnectionName()
+    {
+        return session('db_connection', parent::getConnectionName());
+    }
+
+    public function setConnection($name)
+    {
+        $this->connection = $name;
+        return $this;
+    }
 }

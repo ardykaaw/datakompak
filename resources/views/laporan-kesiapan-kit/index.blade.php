@@ -97,6 +97,7 @@ window.copyFormattedText = function() {
 // Modifikasi fungsi fetch data
 window.refreshLastData = function() {
     const inputTime = document.getElementById('input_time').value;
+    const inputDate = document.getElementById('input_date').value;
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
     // Show loading indicator
@@ -109,9 +110,8 @@ window.refreshLastData = function() {
     });
 
     // Debug log
-    console.log('Fetching data with input time:', inputTime);
+    console.log('Fetching data with input time:', inputTime, 'and date:', inputDate);
 
-    // Gunakan base URL yang benar
     const apiUrl = `${getBaseUrl()}/api/machines/last-data`;
     
     fetch(apiUrl, {
@@ -122,7 +122,8 @@ window.refreshLastData = function() {
             'Accept': 'application/json'
         },
         body: JSON.stringify({
-            input_time: inputTime
+            input_time: inputTime,
+            input_date: inputDate
         })
     })
     .then(response => {
@@ -180,23 +181,45 @@ document.addEventListener('DOMContentLoaded', function() {
              'lg:pl-64': isSidebarOpen,
              'lg:pl-20': !isSidebarOpen
          }">
-        <!-- Header -->
+        <!-- Simplified Header -->
         <header class="bg-white shadow-sm sticky top-0 z-10">
-            <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center">
-                    <button @click="isSidebarOpen = !isSidebarOpen" 
-                            class="text-gray-500 hover:text-gray-600 focus:outline-none mr-4">
-                        <i class="fas fa-grip-lines text-xl"></i>
-                    </button>
-                    <h1 class="text-xl font-semibold text-gray-900">Laporan Kesiapan KIT</h1>
+            <div class="px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-14">
+                    <div class="flex items-center">
+                        <button @click="isSidebarOpen = !isSidebarOpen" 
+                                class="text-gray-500 hover:text-gray-600 focus:outline-none mr-4">
+                            <i class="fas fa-grip-lines text-xl"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-gray-900">Laporan Kesiapan KIT</h1>
+                    </div>
+                    <span class="text-sm text-gray-500">{{ now()->format('d M Y') }}</span>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <form action="{{ route('laporan-kesiapan-kit.index') }}" method="GET" class="flex items-center space-x-4">
-                        <div class="w-48">
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="p-4">
+            <!-- Filter and Actions Section -->
+            <div class="max-w-7xl mx-auto mb-6 bg-white rounded-lg shadow-sm p-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                    <!-- Left side: Filters -->
+                    <form action="{{ route('laporan-kesiapan-kit.index') }}" method="GET" 
+                          class="flex flex-wrap items-center gap-3">
+                        <div class="w-40">
+                            <label for="input_date" class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                            <input type="date" 
+                                   name="input_date" 
+                                   id="input_date"
+                                   value="{{ request('input_date', now()->format('Y-m-d')) }}"
+                                   onchange="this.form.submit()"
+                                   class="block w-full px-2 py-1.5 text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="w-44">
+                            <label for="input_time" class="block text-sm font-medium text-gray-700 mb-1">Waktu</label>
                             <select name="input_time" 
                                     id="input_time" 
                                     onchange="this.form.submit()"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    class="block w-full px-2 py-1.5 text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                                 <option value="">Pilih Waktu</option>
                                 @foreach($availableTimes as $time => $label)
                                     <option value="{{ $time }}" {{ request('input_time') == $time ? 'selected' : '' }}>
@@ -206,38 +229,43 @@ document.addEventListener('DOMContentLoaded', function() {
                             </select>
                         </div>
                     </form>
-                    
-                    <a href="{{ route('laporan-kesiapan-kit.create') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <i class="fas fa-plus mr-2"></i>
-                        Input Kesiapan
-                    </a>
-                    <button type="button"
-                            onclick="window.copyFormattedText()"
-                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <i class="fas fa-copy mr-2"></i>
-                        Copy Laporan
-                    </button>
-                    <a href="{{ route('laporan-kesiapan-kit.pdf') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                       target="_blank">
-                        <i class="fas fa-file-pdf mr-2"></i>
-                        Export PDF
-                    </a>
-                    <span class="text-sm text-gray-500">{{ now()->format('d M Y') }}</span>
+
+                    <!-- Right side: Action Buttons -->
+                    <div class="flex items-center space-x-2">
+                        <a href="{{ route('laporan-kesiapan-kit.create') }}" 
+                           class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-plus mr-1.5"></i>
+                            Input
+                        </a>
+                        <button type="button"
+                                onclick="window.copyFormattedText()"
+                                class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <i class="fas fa-copy mr-1.5"></i>
+                            Copy
+                        </button>
+                        <a href="{{ route('laporan-kesiapan-kit.pdf') }}" 
+                           class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                           target="_blank">
+                            <i class="fas fa-file-pdf mr-1.5"></i>
+                            PDF
+                        </a>
+                    </div>
                 </div>
             </div>
-        </header>
 
-        <!-- Add this after the header for debugging -->
-        @if(request('input_time'))
-            <div class="bg-blue-100 p-4 mb-4">
-                <p class="text-sm">Filtering for time: {{ request('input_time') }}</p>
-            </div>
-        @endif
+            <!-- Update the debug info to show both date and time -->
+            @if(request('input_time') || request('input_date'))
+                <div class="bg-blue-100 p-4 mb-4">
+                    <p class="text-sm">
+                        Filtering for date: {{ request('input_date', now()->format('Y-m-d')) }}
+                        @if(request('input_time'))
+                            , time: {{ request('input_time') }}
+                        @endif
+                    </p>
+                </div>
+            @endif
 
-        <!-- Main Content Area -->
-        <main class="p-4">
+            <!-- Content Cards -->
             <div class="max-w-7xl mx-auto space-y-6">
                 @foreach($units as $unit)
                 <div class="bg-white shadow rounded-lg overflow-hidden">
@@ -247,8 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h2 class="text-lg font-semibold text-gray-900">{{ $unit->name }}</h2>
                             <div class="w-64">
                                 <div class="text-sm text-gray-600">
-                                    <span class="font-medium">HOP:</span>
-                                    <span class="ml-2">{{ number_format($unit->hop ?? 0, 2) }} Hari</span>
+                                    <span class="font-medium">{{ str_contains($unit->name, 'PLTM ') ? 'Inflow' : 'HOP' }}:</span>
+                                    <span class="ml-2">{{ number_format($unit->hop ?? 0, 2) }} {{ str_contains($unit->name, 'PLTM ') ? 'm³/s' : 'Hari' }}</span>
                                 </div>
                             </div>
                         </div>
