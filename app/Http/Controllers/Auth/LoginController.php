@@ -30,18 +30,19 @@ class LoginController extends Controller
         $unit = Unit::find($request->unit);
         $connection = $this->getConnectionForUnit($unit);
 
-        // Set the database connection
-        Config::set('database.default', $connection);
-        
-        // Penting: Set koneksi untuk Auth facade
-        Auth::setProvider(Auth::createUserProvider($connection));
-        
-        // Debug info
-        Log::info('Attempting login with connection: ' . $connection);
-        Log::info('Current default connection: ' . Config::get('database.default'));
-        
-        // Attempt to authenticate against the specific database
         try {
+            // Set the database connection
+            Config::set('database.default', $connection);
+            
+            // Set auth defaults
+            Config::set('auth.defaults.guard', 'web');
+            Config::set('auth.defaults.passwords', 'users');
+            
+            // Configure the user provider for this connection
+            Config::set('auth.providers.users.driver', 'eloquent');
+            Config::set('auth.providers.users.model', \App\Models\User::class);
+            
+            // Attempt to authenticate
             if (Auth::attempt([
                 'email' => $credentials['email'],
                 'password' => $credentials['password']
@@ -61,7 +62,7 @@ class LoginController extends Controller
         } catch (\Exception $e) {
             Log::error('Login error: ' . $e->getMessage());
             return back()->withErrors([
-                'email' => 'Authentication error occurred.',
+                'email' => 'Authentication error occurred: ' . $e->getMessage(),
             ])->onlyInput('email');
         }
 
@@ -72,6 +73,12 @@ class LoginController extends Controller
 
     private function getConnectionForUnit($unit)
     {
+        // Jika unit adalah UP Kendari, gunakan database utama (mysql)
+        if ($unit->name === 'UP KENDARI') {
+            Log::info('Selected Unit: UP KENDARI - Using main database');
+            return 'mysql';
+        }
+
         // Map unit names to database connections
         $connectionMap = [
             'PLTD Bau Bau' => 'mysql_bau_bau',
