@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <button type="submit"
                                         class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0A749B] hover:bg-[#086384] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0A749B]">
                                     <i class="fas fa-save mr-2"></i>
-                                    Simpan Data
+                                    Simpan & Sinkronkan Data
                                 </button>
                             </div>
                         </div>
@@ -303,6 +303,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Submit Button -->
                    
                 </form>
+
+                <!-- Tambahkan di bagian notifikasi -->
+                @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Berhasil!</strong>
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
+                @endif
+
+                @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Error!</strong>
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
+                @endif
             </div>
         </main>
     </div>

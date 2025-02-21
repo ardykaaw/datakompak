@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use App\Events\MachineLogCreated;
+use App\Events\UnitHopCreated;
+use App\Listeners\SyncMachineLogToMainDatabase;
+use App\Listeners\SyncUnitHopToMainDatabase;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -16,6 +20,12 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        MachineLogCreated::class => [
+            SyncMachineLogToMainDatabase::class,
+        ],
+        UnitHopCreated::class => [
+            SyncUnitHopToMainDatabase::class,
         ],
     ];
 

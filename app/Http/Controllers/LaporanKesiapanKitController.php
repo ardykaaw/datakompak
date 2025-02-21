@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class LaporanKesiapanKitController extends Controller
 {
@@ -98,50 +99,63 @@ class LaporanKesiapanKitController extends Controller
 
         $inputTime = Carbon::parse($request->input_time);
 
-        // Store HOP values
-        foreach ($request->hop ?? [] as $unitId => $hopValue) {
-            if (!is_null($hopValue)) {
-                UnitHop::create([
-                    'unit_id' => $unitId,
-                    'hop_value' => $hopValue,
-                    'input_time' => $inputTime,
-                ]);
+        try {
+            DB::beginTransaction();
+
+            // Store HOP values
+            foreach ($request->hop ?? [] as $unitId => $hopValue) {
+                if (!is_null($hopValue)) {
+                    UnitHop::create([
+                        'unit_id' => $unitId,
+                        'hop_value' => $hopValue,
+                        'input_time' => $inputTime,
+                    ]);
+                }
             }
-        }
 
-        // Store the machine data
-        foreach ($request->data ?? [] as $machineId => $data) {
-            // Check if any field has data
-            if (!empty($data['capable_power']) || 
-                !empty($data['supply_power']) || 
-                !empty($data['current_load']) || 
-                !empty($data['status'])) {
-                
-                $machine = Machine::find($machineId);
-                
-                MachineLog::create([
-                    'machine_id' => $machineId,
-                    'unit_id' => $machine->unit_id,
-                    'capable_power' => $data['capable_power'] ?? null,
-                    'supply_power' => $data['supply_power'] ?? null,
-                    'current_load' => $data['current_load'] ?? null,
-                    'status' => $data['status'] ?? null,
-                    'input_time' => $inputTime,
-                ]);
+            // Store the machine data
+            foreach ($request->data ?? [] as $machineId => $data) {
+                // Check if any field has data
+                if (!empty($data['capable_power']) || 
+                    !empty($data['supply_power']) || 
+                    !empty($data['current_load']) || 
+                    !empty($data['status'])) {
+                    
+                    $machine = Machine::find($machineId);
+                    
+                    // Create MachineLog - ini akan otomatis trigger event untuk sinkronisasi
+                    MachineLog::create([
+                        'machine_id' => $machineId,
+                        'unit_id' => $machine->unit_id,
+                        'capable_power' => $data['capable_power'] ?? null,
+                        'supply_power' => $data['supply_power'] ?? null,
+                        'current_load' => $data['current_load'] ?? null,
+                        'status' => $data['status'] ?? null,
+                        'input_time' => $inputTime,
+                    ]);
 
-                // Update the latest status in machines table
-                $machine->update([
-                    'capable_power' => $data['capable_power'] ?? null,
-                    'supply_power' => $data['supply_power'] ?? null,
-                    'current_load' => $data['current_load'] ?? null,
-                    'status' => $data['status'] ?? null,
-                    'last_update' => $inputTime,
-                ]);
+                    // Update the latest status in machines table
+                    $machine->update([
+                        'capable_power' => $data['capable_power'] ?? null,
+                        'supply_power' => $data['supply_power'] ?? null,
+                        'current_load' => $data['current_load'] ?? null,
+                        'status' => $data['status'] ?? null,
+                        'last_update' => $inputTime,
+                    ]);
+                }
             }
-        }
 
-        return redirect()->route('laporan-kesiapan-kit.index')
-                        ->with('success', 'Data kesiapan dan HOP berhasil disimpan');
+            DB::commit();
+            return redirect()->route('laporan-kesiapan-kit.index')
+                            ->with('success', 'Data kesiapan dan HOP berhasil disimpan dan disinkronkan');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error in storing machine logs: ' . $e->getMessage());
+            return redirect()->back()
+                            ->with('error', 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage())
+                            ->withInput();
+        }
     }
 
     public function exportPDF()

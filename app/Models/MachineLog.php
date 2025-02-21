@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\MachineLogCreated;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -24,6 +25,14 @@ class MachineLog extends Model
         'current_load' => 'decimal:2',
     ];
 
+    protected static function booted()
+    {
+        static::created(function ($machineLog) {
+            // Trigger event setelah data disimpan
+            event(new MachineLogCreated($machineLog, $machineLog->getConnectionName()));
+        });
+    }
+
     public function machine(): BelongsTo
     {
         return $this->belongsTo(Machine::class);
@@ -32,5 +41,11 @@ class MachineLog extends Model
     public function unit(): BelongsTo
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    // Override getConnectionName untuk dynamic connection
+    public function getConnectionName()
+    {
+        return session('db_connection', parent::getConnectionName());
     }
 } 
